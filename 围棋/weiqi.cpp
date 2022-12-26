@@ -50,6 +50,11 @@ DLL void keyborad(sf::Event::KeyEvent keyEvent)
 	}
 }
 
+DLL void sleep()
+{
+	sf::sleep(sf::milliseconds(100));
+}
+
 DLL void ened()
 {
 

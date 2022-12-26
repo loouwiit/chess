@@ -13,6 +13,7 @@ void (*update)(void) = nullptr;
 void (*click)(sf::Event::MouseButtonEvent mouseEvent) = nullptr;
 void (*mouse)(sf::Event::MouseMoveEvent mouseEvent) = nullptr;
 void (*keyborad)(sf::Event::KeyEvent keyEvent) = nullptr;
+void (*sleep)(void) = nullptr;
 void (*ened)(void) = nullptr;
 
 sf::RenderWindow window;
@@ -46,7 +47,8 @@ int main(int argc, char* argv[])
 			}
 		}
 		if (ened != nullptr)ened();
-		sf::sleep(sf::milliseconds(100));
+		if (sleep != nullptr) sleep();
+		else sf::sleep(sf::milliseconds(100));
 	}
 
 	load_DLL(nullptr);
@@ -94,6 +96,7 @@ bool load_DLL(const char path[])
 		click = nullptr;
 		mouse = nullptr;
 		keyborad = nullptr;
+		sleep = nullptr;
 		ened = nullptr;
 		return true;
 	}
@@ -115,6 +118,9 @@ bool load_DLL(const char path[])
 
 	keyborad = (void (*)(sf::Event::KeyEvent)) GetProcAddress(hDLL, "keyborad");
 	if (keyborad == nullptr) { FreeLibrary(hDLL); return false; }
+
+	sleep = (void (*)(void)) GetProcAddress(hDLL, "sleep");
+	if (sleep == nullptr) { FreeLibrary(hDLL); return false; }
 
 	ened = (void (*)(void)) GetProcAddress(hDLL, "ened");
 	if (ened == nullptr) { FreeLibrary(hDLL); return false; }
