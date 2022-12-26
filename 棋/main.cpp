@@ -1,26 +1,29 @@
+#include <iostream>
+#include <Windows.h>
 #include <SFML/Graphics.hpp>
-#include "const.h"
+
+constexpr int window_Size[2] = { 1920 * 2 / 3, 1080 * 2 / 3 };
 
 int main(int argc,char * argv[]);
-sf::Texture get_Map_Texture();
+void initlize();
+bool load_DLL(const char path[]);
+
+void (*init)(sf::RenderWindow* window) = nullptr;
+void (*update)(void) = nullptr;
+void (*click)(sf::Event::MouseButtonEvent mouseEvent) = nullptr;
+void (*mouse)(sf::Event::MouseMoveEvent mouseEvent) = nullptr;
+void (*keyborad)(sf::Event::KeyEvent keyEvent) = nullptr;
+void (*ened)(void) = nullptr;
+
+sf::RenderWindow window;
+sf::View view;
+sf::Font font;
+HINSTANCE hDLL;
 
 int main(int argc, char* argv[])
 {
-	sf::RenderWindow window;
-	sf::View view;
-	sf::Texture map_Texture;
-	sf::Sprite map;
+	initlize();
 
-	map_Texture = get_Map_Texture();
-	map.setTexture(map_Texture);
-
-	window.create(sf::VideoMode(window_Size[0],window_Size[1]), L"∆Â");
-	view.setSize((float)window_Size[0], (float)window_Size[1]);
-	view.setCenter((float)(window_Size[0] / 2), (float)(window_Size[1] / 2));
-	window.setView(view);
-	window.draw(map);
-	window.display();
-	
 	while (window.isOpen())
 	{
 		static sf::Event event;
@@ -28,56 +31,93 @@ int main(int argc, char* argv[])
 		{
 			switch (event.type)
 			{
-			case ::sf::Event::Closed:
+			case sf::Event::KeyPressed:
+				if (keyborad != nullptr)keyborad(event.key);
+				break;
+			case sf::Event::MouseMoved:
+				if (mouse != nullptr) mouse(event.mouseMove);
+				break;
+			case sf::Event::MouseButtonPressed:
+				if (click != nullptr)click(event.mouseButton);
+				break;
+			case sf::Event::Closed:
 				window.close();
 				break;
 			}
 		}
-
+		if (ened != nullptr)ened();
 		sf::sleep(sf::milliseconds(100));
 	}
+
+	load_DLL(nullptr);
 
 	return 0;
 }
 
-sf::Texture get_Map_Texture()
+void initlize()
 {
-	constexpr int offset = (1080 * 2 / 3 - 37 * 19) / 2;
+	window.create(sf::VideoMode(window_Size[0], window_Size[1]), L"∆Â");
+	view.setSize((float)window_Size[0], (float)window_Size[1]);
+	view.setCenter((float)(window_Size[0] / 2), (float)(window_Size[1] / 2));
+	window.setView(view);
 
-	sf::RenderTexture map;
-	sf::RectangleShape line[2];
-	sf::CircleShape circle;
+	sf::Text text;
+	if (!font.loadFromFile("C:/windows/fonts/msyh.ttc")) font.loadFromFile("C:/windos/fonts/msyh.ttf");
+	text.setFont(font);
+	text.setPosition((float)(window_Size[0] / 2), (float)(window_Size[1] / 2));
+	text.setOrigin(text.getGlobalBounds().width / 2, text.getGlobalBounds().height / 2);
+	text.setString(L"º”‘ÿ÷–°≠°≠");
+	window.draw(text);
+	window.display();
 
-	//map.create(block_Size*19, block_Size * 19);
-	map.create(window_Size[1], window_Size[1]);
-	map.clear(sf::Color(0xF0D36FFF));
-	line[0].setTexture(nullptr);
-	line[1].setTexture(nullptr);
-	line[0].setSize({ (float)((block_Size * 18) + line_Width), (float)line_Width });
-	line[1].setSize({ (float)line_Width, (float)((block_Size * 18) + line_Width) });
-	line[0].setOrigin((float)(line_Width / 2), (float)(line_Width / 2));
-	line[1].setOrigin((float)(line_Width / 2), (float)(line_Width / 2));
-	line[0].setFillColor(sf::Color(0x000000FF));
-	line[1].setFillColor(sf::Color(0x000000FF));
-	circle.setTexture(nullptr);
-	circle.setRadius(circle_Radius);
-	circle.setOrigin(circle_Radius, circle_Radius);
-	circle.setFillColor(sf::Color(0x000000FF));
-	
-	for (char i = 0; i < 19; i++)
+	if (!load_DLL("./dll/weiqi.dll"))
 	{
-		line[0].setPosition((float)(block_Size / 2 + offset), (float)(i * block_Size + block_Size / 2 + offset));
-		line[1].setPosition((float)(i * block_Size + block_Size / 2 + offset), (float)(block_Size / 2 + offset));
-		map.draw(line[0]);
-		map.draw(line[1]);
+		text.setString(L"º”‘ÿ ß∞‹");
+		window.draw(text);
+		window.display();
+		return;
 	}
 
-	for (char i = 0; i < 9; i++)
+	init(&window);
+}
+
+bool load_DLL(const char path[])
+{
+	if (path == nullptr)
 	{
-		circle.setPosition((float)((i / 3 * 6 + 3) * block_Size + block_Size / 2 + offset),
-			(float)((i % 3 * 6 + 3) * block_Size + block_Size / 2) + offset);
-		map.draw(circle);
+		if (ened != nullptr) ened();
+		FreeLibrary(hDLL);
+
+		hDLL = nullptr;
+		init = nullptr;
+		update = nullptr;
+		click = nullptr;
+		mouse = nullptr;
+		keyborad = nullptr;
+		ened = nullptr;
+		return true;
 	}
-	
-	return map.getTexture();
+
+	hDLL = LoadLibraryA(path);
+	if (hDLL == nullptr) { FreeLibrary(hDLL); return false; }
+
+	init = (void (*)(sf::RenderWindow*)) GetProcAddress(hDLL, "init");
+	if (init == nullptr) { FreeLibrary(hDLL); return false; }
+
+	update = (void (*)(void)) GetProcAddress(hDLL, "update");
+	if (update == nullptr) { FreeLibrary(hDLL); return false; }
+
+	click = (void (*)(sf::Event::MouseButtonEvent)) GetProcAddress(hDLL, "click");
+	if (click == nullptr) { FreeLibrary(hDLL); return false; }
+
+	mouse = (void (*)(sf::Event::MouseMoveEvent)) GetProcAddress(hDLL, "mouse");
+	if (mouse == nullptr) { FreeLibrary(hDLL); return false; }
+
+	keyborad = (void (*)(sf::Event::KeyEvent)) GetProcAddress(hDLL, "keyborad");
+	if (keyborad == nullptr) { FreeLibrary(hDLL); return false; }
+
+	ened = (void (*)(void)) GetProcAddress(hDLL, "ened");
+	if (ened == nullptr) { FreeLibrary(hDLL); return false; }
+
+	return true;
 }

@@ -5,6 +5,8 @@ VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "棋", "棋\棋.vcxproj", "{87225FF4-261A-4F5B-9898-7A9A2E0FF148}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "围棋", "围棋\围棋.vcxproj", "{B68B1F01-76C3-4410-A17A-38F427E15EE9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{87225FF4-261A-4F5B-9898-7A9A2E0FF148}.Release|x64.Build.0 = Release|x64
 		{87225FF4-261A-4F5B-9898-7A9A2E0FF148}.Release|x86.ActiveCfg = Release|Win32
 		{87225FF4-261A-4F5B-9898-7A9A2E0FF148}.Release|x86.Build.0 = Release|Win32
+		{B68B1F01-76C3-4410-A17A-38F427E15EE9}.Debug|x64.ActiveCfg = Debug|x64
+		{B68B1F01-76C3-4410-A17A-38F427E15EE9}.Debug|x64.Build.0 = Debug|x64
+		{B68B1F01-76C3-4410-A17A-38F427E15EE9}.Debug|x86.ActiveCfg = Debug|Win32
+		{B68B1F01-76C3-4410-A17A-38F427E15EE9}.Debug|x86.Build.0 = Debug|Win32
+		{B68B1F01-76C3-4410-A17A-38F427E15EE9}.Release|x64.ActiveCfg = Release|x64
+		{B68B1F01-76C3-4410-A17A-38F427E15EE9}.Release|x64.Build.0 = Release|x64
+		{B68B1F01-76C3-4410-A17A-38F427E15EE9}.Release|x86.ActiveCfg = Release|Win32
+		{B68B1F01-76C3-4410-A17A-38F427E15EE9}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
