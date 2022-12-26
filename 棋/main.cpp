@@ -47,12 +47,12 @@ int main(int argc, char* argv[])
 				break;
 			}
 		}
-		if (is_Running != nullptr)
-			if (!is_Running())
-			{
-				load_DLL(nullptr);
-			}
-
+		//if (is_Running != nullptr)
+		//	if (!is_Running())
+		//	{
+		//		load_DLL(nullptr);
+		//	}
+		if (update != nullptr) update();
 		if (sleep != nullptr) sleep();
 		else sf::sleep(sf::milliseconds(100));
 	}
