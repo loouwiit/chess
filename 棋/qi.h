@@ -8,4 +8,5 @@ DLL void click(sf::Event::MouseButtonEvent mouseEvent);
 DLL void mouse(sf::Event::MouseMoveEvent mouseEvent);
 DLL void keyborad(sf::Event::KeyEvent keyEvent);
 DLL void sleep();
+DLL bool is_Running();
 DLL void ened();

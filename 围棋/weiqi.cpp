@@ -12,6 +12,8 @@ constexpr int window_Size[2] = { 1920 * 2 / 3, 1080 * 2 / 3 };
 
 sf::Texture get_Map_Texture();
 
+bool running = false;
+
 sf::RenderWindow* window = nullptr;
 sf::Texture map_Texture;
 sf::Sprite map;
@@ -23,6 +25,7 @@ DLL void init(sf::RenderWindow* window)
 	map.setTexture(map_Texture);
 	window->draw(map);
 	window->display();
+	running = true;
 }
 
 DLL void update()
@@ -55,9 +58,14 @@ DLL void sleep()
 	sf::sleep(sf::milliseconds(100));
 }
 
+DLL bool is_Running()
+{
+	return running;
+}
+
 DLL void ened()
 {
-
+	running = false;
 }
 
 sf::Texture get_Map_Texture()
