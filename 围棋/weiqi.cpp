@@ -16,15 +16,18 @@ constexpr char white = -100;
 constexpr int map_Offset = (1080 * 2 / 3 - 37 * 19) / 2;
 
 sf::Texture get_Map_Texture();
-sf::Texture get_Chess_Texture(sf::Color qi);
+//sf::Texture get_Chess_Texture(sf::Color qi);
 void draw();
 void compute_Qi(char x, char y);//计算并更新气
 short check_Qi(char x, char y, short self_Color = 0);//计算气
 void spread_Qi(char x, char y);//传播气
 void spread_Qi(char x, char y, short qi, char color);//传播气
 
+//void compute_Belong();
+
 bool running = false;
 bool update_Fream = true;
+bool draw_Belong = false;
 
 sf::RenderWindow* window = nullptr;
 sf::RenderTexture fream;
@@ -41,7 +44,7 @@ struct map_t
 map_t map[19][19] = { {0,false} };
 sf::Texture chess_Texture[2];
 //sf::Sprite chess[19][19];
-sf::Sprite chess[2];
+sf::CircleShape chess[4];
 
 
 DLL void init(sf::RenderWindow* window)
@@ -51,8 +54,15 @@ DLL void init(sf::RenderWindow* window)
 	fream.create(window_Size[0], window_Size[1]);
 	background_Texture = get_Map_Texture();
 	background.setTexture(background_Texture);
-	chess_Texture[0] = get_Chess_Texture(sf::Color(0x000000FF));
-	chess_Texture[1] = get_Chess_Texture(sf::Color(0xFFFFFFFF));
+	for (char i = 0; i < 4; i++)
+	{
+		chess[i].setRadius(chess_Radius);
+		chess[i].setOrigin((float)chess_Radius, (float)chess_Radius);
+	}
+	chess[0].setFillColor(sf::Color(0x000000FF));
+	chess[1].setFillColor(sf::Color(0xFFFFFFFF));
+	chess[2].setFillColor(sf::Color(0x00000099));
+	chess[3].setFillColor(sf::Color(0xFFFFFF99));
 
 	//for (char i = 0; i < 19; i++)
 	//	for (char j = 0; j < 19; j++)
@@ -64,11 +74,6 @@ DLL void init(sf::RenderWindow* window)
 
 	//		window->draw(chess[i][j]);
 	//	}
-
-	chess[0].setOrigin((float)(chess_Texture[0].getSize().x / 2), (float)(chess_Texture[0].getSize().y / 2));
-	chess[1].setOrigin((float)(chess_Texture[0].getSize().x / 2), (float)(chess_Texture[0].getSize().y / 2));
-	chess[0].setTexture(chess_Texture[0]);
-	chess[1].setTexture(chess_Texture[1]);
 
 	update_Fream = true;
 
@@ -200,17 +205,17 @@ sf::Texture get_Map_Texture()
 	return background.getTexture();
 }
 
-sf::Texture get_Chess_Texture(sf::Color qi)
-{
-	sf::RenderTexture chess;
-	sf::CircleShape circle;
-
-	chess.create(chess_Radius * 2, chess_Radius * 2);
-	circle.setRadius(chess_Radius);
-	circle.setFillColor(qi);
-	chess.draw(circle);
-	return chess.getTexture();
-}
+//sf::Texture get_Chess_Texture(sf::Color qi) //我不理解，直接用俩圆也行啊，为啥要搞成贴图后导出呐
+//{
+//	sf::RenderTexture chess;
+//	sf::CircleShape circle;
+//
+//	chess.create(chess_Radius * 2, chess_Radius * 2);
+//	circle.setRadius(chess_Radius);
+//	circle.setFillColor(qi);
+//	chess.draw(circle);
+//	return chess.getTexture();
+//}
 
 void draw()
 {
@@ -227,6 +232,21 @@ void draw()
 		{
 			chess[1].setPosition((float)(i * block_Size + block_Size / 2) + map_Offset, (float)(j * block_Size + block_Size / 2 + map_Offset));
 			fream.draw(chess[1]);
+			continue;
+		}
+
+		if (!draw_Belong) continue;
+
+		if (map[i][j].belong > 0)
+		{
+			chess[2].setPosition((float)(i * block_Size + block_Size / 2) + map_Offset, (float)(j * block_Size + block_Size / 2 + map_Offset));
+			fream.draw(chess[2]);
+			continue;
+		}
+		if (map[i][j].belong < 0)
+		{
+			chess[3].setPosition((float)(i * block_Size + block_Size / 2) + map_Offset, (float)(j * block_Size + block_Size / 2 + map_Offset));
+			fream.draw(chess[3]);
 			continue;
 		}
 	}
