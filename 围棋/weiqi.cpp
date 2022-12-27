@@ -42,7 +42,8 @@ struct map_t
 };
 
 map_t map[19][19] = { {0,false} };
-short wins = 0;
+short holds[4] = { 0 };
+short wins[2] = { 0 };
 sf::Texture chess_Texture[2];
 //sf::Sprite chess[19][19];
 sf::CircleShape chess[4];
@@ -374,14 +375,15 @@ void compute_Belong(char depth)
 		}
 	}
 
-	wins = 0;
+	for (char i = 0; i < 4; i++) holds[i] = 0;
 	for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
 	{
-		if (map[i][j].qi > 0) { wins++; continue; }
-		if (map[i][j].qi < 0) { wins--; continue; }
+		if (map[i][j].qi > 0) { holds[0]++; continue; } //вс
+		if (map[i][j].qi < 0) { holds[1]++; continue; }
 
-		if (map[i][j].belong > 0) { wins++; continue; }
-		if (map[i][j].belong < 0) { wins--; continue; }
+		if (map[i][j].belong > 0) { holds[0]++; holds[2]++; continue; } //д©
+		if (map[i][j].belong < 0) { holds[1]++; holds[3]++; continue; }
 	}
-	printf_s("wins %d\n", wins);
+	wins[0] = holds[0] - holds[1]; wins[1] = holds[2] - holds[3];
+	printf_s("wins %d %d\n", wins[0], wins[1]);
 }
