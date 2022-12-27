@@ -18,6 +18,7 @@ constexpr int map_Offset = (1080 * 2 / 3 - 37 * 19) / 2;
 sf::Texture get_Map_Texture();
 sf::Texture get_Chess_Texture(sf::Color color);
 void draw();
+char check_Qi(char x, char y, char self_Color = 0);//计算气
 
 bool running = false;
 bool update_Fream = true;
@@ -29,8 +30,9 @@ sf::Sprite background;
 
 struct map_t
 {
-	char qi;//气
-	bool color;//true ==> black
+	short color;//气
+	char belong;//归属
+	bool checked;//气被计算过
 };
 
 map_t map[19][19] = { {0,false} };
@@ -94,15 +96,26 @@ DLL void click(sf::Event::MouseButtonEvent mouseEvent)
 	subscript[0] = ((int)position.x - map_Offset) / block_Size;
 	subscript[1] = 18 - ((int)position.y - map_Offset) / block_Size;//不知为何要自己反转y轴
 
-	if (subscript[0] < 0 || subscript[0] >= 19)  subscript[0] = -1;
-	if (subscript[1] < 0 || subscript[1] >= 19)  subscript[1] = -1;
+	if (subscript[0] < 0 || subscript[0] > 18)  subscript[0] = -1;
+	if (subscript[1] < 0 || subscript[1] > 18)  subscript[1] = -1;
 
 	if (subscript[0] != -1 && subscript[1] != -1)
 	{
-		map[subscript[0]][subscript[1]].qi = 1;
-		map[subscript[0]][subscript[1]].color = mouseEvent.button == sf::Mouse::Left;
+		switch (mouseEvent.button)
+		{
+		case sf::Mouse::Right:
+			map[subscript[0]][subscript[1]].color = -1;
+			break;
+		case sf::Mouse::Middle:
+			map[subscript[0]][subscript[1]].color = 0;
+			break;
+		default:
+			map[subscript[0]][subscript[1]].color = 1;
+			break;
+		}
+		map[subscript[0]][subscript[1]].color *= check_Qi(subscript[0], subscript[1]);
 		update_Fream = true;
-		printf_s("put %d %d\n", subscript[0], subscript[1]);
+		printf_s("put %d %d 气：%d\n", subscript[0], subscript[1],map[subscript[0]][subscript[1]].color);
 	}
 	printf_s("click %d %d\n", (int)position.x, (int)position.y);
 	printf_s("mouse %d %d\n", (int)mouseEvent.x, (int)mouseEvent.y);
@@ -195,15 +208,13 @@ void draw()
 	fream.draw(background);
 	for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
 	{
-		if (map[i][j].qi == 0) continue;
-
-		if (map[i][j].color)
+		if (map[i][j].color > 0)
 		{
 			chess[0].setPosition((float)(i * block_Size + block_Size / 2) + map_Offset, (float)(j * block_Size + block_Size / 2 + map_Offset));
 			fream.draw(chess[0]);
 			continue;
 		}
-		else
+		if (map[i][j].color < 0)
 		{
 			chess[1].setPosition((float)(i * block_Size + block_Size / 2) + map_Offset, (float)(j * block_Size + block_Size / 2 + map_Offset));
 			fream.draw(chess[1]);
@@ -212,4 +223,33 @@ void draw()
 	}
 
 	printf_s("draw\n");
+}
+
+char check_Qi(char x, char y,char self_Color) //单线程，非线程安全
+{
+	char qi = 0;
+
+	if (x < 0 || x > 18) return 0;
+	if (y < 0 || y > 18) return 0; //越界
+	
+	if (self_Color == 0) //自己是起点 
+	{
+		self_Color = map[x][y].color > 0 ? 1 : -1; //设定自己的颜色 限制大小防止后续溢出 存在0的情况 但是0会被空return掉
+		for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
+			map[i][j].checked = false; //初始化checked
+	}
+
+	if (map[x][y].checked) return 0; //已经检查
+	map[x][y].checked = true; //标记检查
+
+	if (map[x][y].color == 0) return 1; //空
+
+	if (map[x][y].color * self_Color < 0) return 0; //不同颜色，返回自0 相乘不会溢出 不存在0的情况
+
+	qi += check_Qi(x - 1, y, self_Color);//相同颜色，遍历
+	qi += check_Qi(x + 1, y, self_Color);
+	qi += check_Qi(x, y - 1, self_Color);
+	qi += check_Qi(x, y + 1, self_Color);
+
+	return qi;
 }
