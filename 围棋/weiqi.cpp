@@ -8,6 +8,7 @@
 constexpr int line_Width = 2;
 constexpr int circle_Radius = 4;
 constexpr int chess_Radius = 12;
+constexpr int UI_Chess_Radius = 20;
 constexpr int block_Size = 1080 * 2 / 3 / 19;
 constexpr int window_Size[2] = { 1920 * 2 / 3, 1080 * 2 / 3 };
 
@@ -16,6 +17,7 @@ constexpr char white = -100;
 constexpr int map_Offset = (1080 * 2 / 3 - 37 * 19) / 2;
 
 sf::Texture get_Map_Texture();
+sf::Texture	get_UI_Texture();
 //sf::Texture get_Chess_Texture(sf::Color qi);
 void draw();
 void compute_Qi(char x, char y);//计算并更新气
@@ -33,6 +35,10 @@ sf::RenderWindow* window = nullptr;
 sf::RenderTexture fream;
 sf::Texture background_Texture;
 sf::Sprite background;
+sf::Texture UI_Texture;
+sf::Sprite UI_backgreoud;
+
+sf::Font font;
 
 struct map_t
 {
@@ -54,8 +60,16 @@ DLL void init(sf::RenderWindow* window)
 	running = true;
 	::window = window;
 	fream.create(window_Size[0], window_Size[1]);
+
+	if (!font.loadFromFile("C:/windows/fonts/msyh.ttc")) font.loadFromFile("C:/windos/fonts/msyh.ttf");
+
 	background_Texture = get_Map_Texture();
 	background.setTexture(background_Texture);
+	UI_Texture = get_UI_Texture();
+	UI_backgreoud.setTexture(UI_Texture);
+
+	UI_backgreoud.setPosition((float)window_Size[1], 0.f);
+
 	for (char i = 0; i < 4; i++)
 	{
 		chess[i].setRadius(chess_Radius);
@@ -214,6 +228,56 @@ sf::Texture get_Map_Texture()
 	return background.getTexture();
 }
 
+sf::Texture get_UI_Texture()
+{
+	sf::RenderTexture background;
+	sf::CircleShape chess[4];
+	sf::Text text[5];
+
+	background.create(window_Size[0] - window_Size[1], window_Size[1]);
+	background.clear(sf::Color(0xF0D36FFF));
+
+	chess[0].setFillColor(sf::Color(0x000000FF));
+	chess[1].setFillColor(sf::Color(0xFFFFFFFF));
+	chess[2].setFillColor(sf::Color(0x000000FF));
+	chess[3].setFillColor(sf::Color(0xFFFFFFFF));
+	for (char i = 0; i < 4; i++)
+	{
+		chess[i].setRadius(UI_Chess_Radius);
+		chess[i].setOrigin(UI_Chess_Radius, UI_Chess_Radius);
+		chess[i].setPosition((float)(186 + 186 * (i % 2) + 20), (float)(200 + 180 * (i / 2) - 20));
+		background.draw(chess[i]);
+	}
+
+	text[0].setString(L"数\n子\n法");
+	text[1].setString(L"数\n目\n法");
+	text[2].setString(L"重新游戏");
+	text[3].setString(L"显示范围");
+	text[4].setString(L"围棋");
+
+	for (char i = 0; i < 5; i++)
+	{
+		text[i].setFont(font);
+		text[i].setFillColor(sf::Color(0x000000FF));
+		text[i].setOrigin(text[i].getGlobalBounds().width / 2, text[i].getGlobalBounds().height / 2);
+	}
+
+	for (char i = 0; i < 2; i++)
+	{
+		text[i].setPosition((float)(186 - 100), (float)(200 + 180 * (i % 2)));
+		background.draw(text[i]);
+	}
+	for (char i = 2; i < 4; i++)
+	{
+		text[i].setPosition((float)(186 + 186 * (i % 2)), (float)(200 + 180 * 2));
+		background.draw(text[i]);
+	}
+	text[4].setPosition(280, 60);
+	background.draw(text[4]);
+
+	return background.getTexture();
+}
+
 //sf::Texture get_Chess_Texture(sf::Color qi) //我不理解，直接用俩圆也行啊，为啥要搞成贴图后导出呐
 //{
 //	sf::RenderTexture chess;
@@ -229,7 +293,9 @@ sf::Texture get_Map_Texture()
 void draw()
 {
 	fream.draw(background);
-	for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
+	fream.draw(UI_backgreoud);
+
+	for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++) //渲染棋盘
 	{
 		if (map[i][j].qi > 0)
 		{
@@ -258,6 +324,10 @@ void draw()
 			fream.draw(chess[3]);
 			continue;
 		}
+	}
+
+	{
+		//渲染UI
 	}
 
 	printf_s("draw\n");
