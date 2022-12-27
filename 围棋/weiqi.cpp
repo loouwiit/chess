@@ -37,6 +37,7 @@ sf::Texture background_Texture;
 sf::Sprite background;
 sf::Texture UI_Texture;
 sf::Sprite UI_backgreoud;
+sf::Text UI_Text[4];
 
 sf::Font font;
 
@@ -69,6 +70,17 @@ DLL void init(sf::RenderWindow* window)
 	UI_backgreoud.setTexture(UI_Texture);
 
 	UI_backgreoud.setPosition((float)window_Size[1], 0.f);
+
+	for (char i = 0; i < 4; i++)
+	{
+		UI_Text[i].setFont(font);
+		UI_Text[i].setFillColor(sf::Color(0x000000FF));
+		UI_Text[i].setString(L"000");
+		UI_Text[i].setOrigin(UI_Text[i].getGlobalBounds().width / 2, UI_Text[i].getGlobalBounds().height / 2);
+		UI_Text[i].setString(L"0");
+		UI_Text[i].setScale(1, -1); //不知为何需要沿Y轴对称一下
+		UI_Text[i].setPosition((float)(186 + 186 * (i % 2) + 20 + window_Size[1]), (float)(200 + 180 * 2 - 180 * (i / 2) - 80));//坐标转换真麻烦 还要偏移window_Size[1]
+	}
 
 	for (char i = 0; i < 4; i++)
 	{
@@ -328,6 +340,15 @@ void draw()
 
 	{
 		//渲染UI
+
+		static char buffer[4] = "";
+
+		for (int i = 0; i < 4; i++)
+		{
+			sprintf_s(buffer, sizeof(buffer), "%d", holds[i]);
+			UI_Text[i].setString(buffer);
+			fream.draw(UI_Text[i]);
+		}
 	}
 
 	printf_s("draw\n");
