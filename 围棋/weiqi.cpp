@@ -11,8 +11,8 @@ constexpr int chess_Radius = 12;
 constexpr int block_Size = 1080 * 2 / 3 / 19;
 constexpr int window_Size[2] = { 1920 * 2 / 3, 1080 * 2 / 3 };
 
-constexpr char black = 50;
-constexpr char white = -50;
+constexpr char black = 100;
+constexpr char white = -100;
 constexpr int map_Offset = (1080 * 2 / 3 - 37 * 19) / 2;
 
 sf::Texture get_Map_Texture();
@@ -27,7 +27,13 @@ sf::RenderTexture fream;
 sf::Texture background_Texture;
 sf::Sprite background;
 
-signed char map[19][19] = { 0 };
+struct map_t
+{
+	char qi;//气
+	bool color;//true ==> black
+};
+
+map_t map[19][19] = { {0,false} };
 sf::Texture chess_Texture[2];
 //sf::Sprite chess[19][19];
 sf::Sprite chess[2];
@@ -83,10 +89,23 @@ DLL void click(sf::Event::MouseButtonEvent mouseEvent)
 {
 	sf::Vector2f position = window->mapPixelToCoords({ mouseEvent.x, mouseEvent.y });
 
-	map[0][0] = 50;
-	update_Fream = true;
+	char subscript[2] = { -1, -1 };
 
+	subscript[0] = ((int)position.x - map_Offset) / block_Size;
+	subscript[1] = 18 - ((int)position.y - map_Offset) / block_Size;//不知为何要自己反转y轴
+
+	if (subscript[0] < 0 || subscript[0] >= 19)  subscript[0] = -1;
+	if (subscript[1] < 0 || subscript[1] >= 19)  subscript[1] = -1;
+
+	if (subscript[0] != -1 && subscript[1] != -1)
+	{
+		map[subscript[0]][subscript[1]].qi = 1;
+		map[subscript[0]][subscript[1]].color = mouseEvent.button == sf::Mouse::Left;
+		update_Fream = true;
+		printf_s("put %d %d\n", subscript[0], subscript[1]);
+	}
 	printf_s("click %d %d\n", (int)position.x, (int)position.y);
+	printf_s("mouse %d %d\n", (int)mouseEvent.x, (int)mouseEvent.y);
 }
 
 DLL void mouse(sf::Event::MouseMoveEvent mouseEvent)
@@ -176,13 +195,15 @@ void draw()
 	fream.draw(background);
 	for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
 	{
-		if (map[i][j] == black)
+		if (map[i][j].qi == 0) continue;
+
+		if (map[i][j].color)
 		{
 			chess[0].setPosition((float)(i * block_Size + block_Size / 2) + map_Offset, (float)(j * block_Size + block_Size / 2 + map_Offset));
 			fream.draw(chess[0]);
 			continue;
 		}
-		if (map[i][j] == white)
+		else
 		{
 			chess[1].setPosition((float)(i * block_Size + block_Size / 2) + map_Offset, (float)(j * block_Size + block_Size / 2 + map_Offset));
 			fream.draw(chess[1]);
