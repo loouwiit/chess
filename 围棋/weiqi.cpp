@@ -23,7 +23,7 @@ short check_Qi(char x, char y, short self_Color = 0);//计算气
 void spread_Qi(char x, char y);//传播气
 void spread_Qi(char x, char y, short qi, char color);//传播气
 
-//void compute_Belong();
+void compute_Belong(char depth);//计算归属
 
 bool running = false;
 bool update_Fream = true;
@@ -36,12 +36,13 @@ sf::Sprite background;
 
 struct map_t
 {
-	short qi;//气
-	char belong;//归属
+	short qi;//气 因为符号所以要用两字节
+	short belong;//归属
 	bool checked;//气被计算过
 };
 
 map_t map[19][19] = { {0,false} };
+short wins = 0;
 sf::Texture chess_Texture[2];
 //sf::Sprite chess[19][19];
 sf::CircleShape chess[4];
@@ -61,8 +62,8 @@ DLL void init(sf::RenderWindow* window)
 	}
 	chess[0].setFillColor(sf::Color(0x000000FF));
 	chess[1].setFillColor(sf::Color(0xFFFFFFFF));
-	chess[2].setFillColor(sf::Color(0x00000099));
-	chess[3].setFillColor(sf::Color(0xFFFFFF99));
+	chess[2].setFillColor(sf::Color(0x00000033));
+	chess[3].setFillColor(sf::Color(0xFFFFFF66));
 
 	//for (char i = 0; i < 19; i++)
 	//	for (char j = 0; j < 19; j++)
@@ -92,7 +93,7 @@ DLL void update()
 	window->clear();
 	window->draw(sprite_Fream);
 	window->display();
-	printf_s("update\n");
+	//printf_s("update\n");
 }
 
 DLL void click(sf::Event::MouseButtonEvent mouseEvent)
@@ -128,6 +129,7 @@ DLL void click(sf::Event::MouseButtonEvent mouseEvent)
 
 		compute_Qi(subscript[0], subscript[1]);//中心
 
+		compute_Belong(3);
 		update_Fream = true;
 		printf_s("put %d %d 气：%d\n", subscript[0], subscript[1], map[subscript[0]][subscript[1]].qi);
 	}
@@ -146,6 +148,12 @@ DLL void keyborad(sf::Event::KeyEvent keyEvent)
 	{
 	case sf::Keyboard::Escape:
 		window->close();
+		break;
+	case sf::Keyboard::Space:
+		draw_Belong = !draw_Belong;
+		update_Fream = true;
+		break;
+	default:
 		break;
 	}
 }
@@ -269,7 +277,7 @@ void compute_Qi(char x, char y)
 	spread_Qi(x, y, qi, map[x][y].qi > 0 ? 1 : -1); //传播气 有可能传入0，所以需要color限制
 }
 
-short check_Qi(char x, char y,short self_Color) //单线程，非线程安全
+short check_Qi(char x, char y, short self_Color) //单线程，非线程安全
 {
 	short qi = 0;
 
@@ -320,4 +328,60 @@ void spread_Qi(char x, char y, short qi, char color)
 	spread_Qi(x + 1, y, qi, color);//遍历
 	spread_Qi(x, y - 1, qi, color);//遍历
 	spread_Qi(x, y + 1, qi, color);//遍历
+}
+
+void compute_Belong(char depth)
+{
+	short buffer[19][19] = { 0 };
+	short sum = 0;
+	for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
+	{
+		sum = 0;
+		if (i != 00) sum += min(abs(map[i - 1][j].qi), 20) * 250 * (map[i - 1][j].qi > 0 ? 1 : -1);
+		if (i != 18) sum += min(abs(map[i + 1][j].qi), 20) * 250 * (map[i + 1][j].qi > 0 ? 1 : -1);
+		if (j != 00) sum += min(abs(map[i][j - 1].qi), 20) * 250 * (map[i][j - 1].qi > 0 ? 1 : -1);
+		if (j != 18) sum += min(abs(map[i][j + 1].qi), 20) * 250 * (map[i][j + 1].qi > 0 ? 1 : -1);
+		if (i != 00 && j != 00) sum += min(abs(map[i - 1][j - 1].qi), 20) * 125 * (map[i - 1][j - 1].qi > 0 ? 1 : -1);
+		if (i != 00 && j != 18) sum += min(abs(map[i - 1][j + 1].qi), 20) * 125 * (map[i - 1][j + 1].qi > 0 ? 1 : -1);
+		if (i != 18 && j != 00) sum += min(abs(map[i + 1][j - 1].qi), 20) * 125 * (map[i + 1][j - 1].qi > 0 ? 1 : -1);
+		if (i != 18 && j != 18) sum += min(abs(map[i + 1][j + 1].qi), 20) * 125 * (map[i + 1][j + 1].qi > 0 ? 1 : -1);
+
+		map[i][j].belong = buffer[i][j] = sum; //初始化归属 
+	}
+
+	for (char times = 0; times < depth; times++)
+	{
+		//由map到buffer
+		for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
+		{
+			//遍历每一个位置
+			buffer[i][j] = buffer[i][j] / 10 * 6; //3/5留
+			if (i != 00 && map[i][j].qi == 0) buffer[i][j] += map[i - 1][j].belong / 10; //2/5出
+			if (i != 18 && map[i][j].qi == 0) buffer[i][j] += map[i + 1][j].belong / 10;
+			if (j != 00 && map[i][j].qi == 0) buffer[i][j] += map[i][j - 1].belong / 10;
+			if (j != 18 && map[i][j].qi == 0) buffer[i][j] += map[i][j + 1].belong / 10;
+		}
+
+		//由buffer到map
+		for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
+		{
+			//遍历每一个位置
+			map[i][j].belong = map[i][j].belong / 10 * 6; //3/5留
+			if (i != 00 && map[i][j].qi == 0) map[i][j].belong += buffer[i - 1][j] / 10; //2/5出
+			if (i != 18 && map[i][j].qi == 0) map[i][j].belong += buffer[i + 1][j] / 10;
+			if (j != 00 && map[i][j].qi == 0) map[i][j].belong += buffer[i][j - 1] / 10;
+			if (j != 18 && map[i][j].qi == 0) map[i][j].belong += buffer[i][j + 1] / 10;
+		}
+	}
+
+	wins = 0;
+	for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
+	{
+		if (map[i][j].qi > 0) { wins++; continue; }
+		if (map[i][j].qi < 0) { wins--; continue; }
+
+		if (map[i][j].belong > 0) { wins++; continue; }
+		if (map[i][j].belong < 0) { wins--; continue; }
+	}
+	printf_s("wins %d\n", wins);
 }
