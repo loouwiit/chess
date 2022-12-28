@@ -30,6 +30,7 @@ void compute_Belong(char depth);//计算归属
 bool running = false;
 bool update_Fream = true;
 bool draw_Belong = false;
+bool next_Color = true;
 
 sf::RenderWindow* window = nullptr;
 sf::RenderTexture fream;
@@ -136,28 +137,40 @@ DLL void click(sf::Event::MouseButtonEvent mouseEvent)
 
 	if (subscript[0] != -1 && subscript[1] != -1)
 	{
-		switch (mouseEvent.button)
+		if (mouseEvent.button == sf::Mouse::Right)
 		{
-		case sf::Mouse::Right:
-			map[subscript[0]][subscript[1]].qi = -1;
-			break;
-		case sf::Mouse::Middle:
-			map[subscript[0]][subscript[1]].qi = 0;
-			break;
-		default:
-			map[subscript[0]][subscript[1]].qi = 1;
-			break;
+			map[subscript[0]][subscript[1]].qi = -map[subscript[0]][subscript[1]].qi;
+
+			compute_Qi(subscript[0] - 1, subscript[1]);//四周
+			compute_Qi(subscript[0] + 1, subscript[1]);
+			compute_Qi(subscript[0], subscript[1] - 1);
+			compute_Qi(subscript[0], subscript[1] + 1);
+
+			compute_Qi(subscript[0], subscript[1]);//中心
+
+			compute_Belong(3);
+			update_Fream = true;
+			printf_s("change %d %d 气：%d\n", subscript[0], subscript[1], map[subscript[0]][subscript[1]].qi);
 		}
-		compute_Qi(subscript[0] - 1, subscript[1]);//四周
-		compute_Qi(subscript[0] + 1, subscript[1]);
-		compute_Qi(subscript[0], subscript[1] - 1);
-		compute_Qi(subscript[0], subscript[1] + 1);
 
-		compute_Qi(subscript[0], subscript[1]);//中心
+		if (map[subscript[0]][subscript[1]].qi == 0) //空地
+		{
+			map[subscript[0]][subscript[1]].qi = next_Color ? 1 : -1;
+			compute_Qi(subscript[0] - 1, subscript[1]);//四周
+			compute_Qi(subscript[0] + 1, subscript[1]);
+			compute_Qi(subscript[0], subscript[1] - 1);
+			compute_Qi(subscript[0], subscript[1] + 1);
 
-		compute_Belong(3);
-		update_Fream = true;
-		printf_s("put %d %d 气：%d\n", subscript[0], subscript[1], map[subscript[0]][subscript[1]].qi);
+			compute_Qi(subscript[0], subscript[1]);//中心
+
+			if (map[subscript[0]][subscript[1]].qi != 0) //正常
+			{
+				next_Color = !next_Color; //轮流持子
+				compute_Belong(3);
+				update_Fream = true;
+				printf_s("put %d %d 气：%d\n", subscript[0], subscript[1], map[subscript[0]][subscript[1]].qi);
+			}
+		}
 	}
 	printf_s("click %d %d\n", (int)position.x, (int)position.y);
 	printf_s("mouse %d %d\n", (int)mouseEvent.x, (int)mouseEvent.y);
