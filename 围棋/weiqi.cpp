@@ -16,6 +16,13 @@ constexpr char black = 100;
 constexpr char white = -100;
 constexpr int map_Offset = (1080 * 2 / 3 - 37 * 19) / 2;
 
+struct map_t
+{
+	short qi;//气 因为符号所以要用两字节
+	short belong;//归属
+	bool checked;//气被计算过
+};
+
 sf::Texture get_Map_Texture();
 sf::Texture	get_UI_Texture();
 //sf::Texture get_Chess_Texture(sf::Color qi);
@@ -29,32 +36,27 @@ void compute_Belong(char depth);//计算归属
 
 bool running = false;
 bool update_Fream = true;
-bool draw_Belong = false;
+bool draw_Details = false;
 bool next_Color = true;
 
 sf::RenderWindow* window = nullptr;
 sf::RenderTexture fream;
+
+sf::Font font;
+
 sf::Texture background_Texture;
 sf::Sprite background;
 sf::Texture UI_Texture;
 sf::Sprite UI_backgreoud;
-sf::Text UI_Text[4];
-
-sf::Font font;
-
-struct map_t
-{
-	short qi;//气 因为符号所以要用两字节
-	short belong;//归属
-	bool checked;//气被计算过
-};
 
 map_t map[19][19] = { {0,false} };
 short holds[4] = { 0 };
 short wins[2] = { 0 };
 sf::Texture chess_Texture[2];
 //sf::Sprite chess[19][19];
-sf::CircleShape chess[4];
+sf::CircleShape chess[6];
+sf::Text UI_Text[4];
+sf::Text number_Text[10];
 
 DLL void init(sf::RenderWindow* window)
 {
@@ -75,22 +77,46 @@ DLL void init(sf::RenderWindow* window)
 	{
 		UI_Text[i].setFont(font);
 		UI_Text[i].setFillColor(sf::Color(0x000000FF));
+		UI_Text[i].setScale(1, -1); //不知为何需要沿Y轴对称一下
 		UI_Text[i].setString(L"000");
 		UI_Text[i].setOrigin(UI_Text[i].getGlobalBounds().width / 2, UI_Text[i].getGlobalBounds().height / 2);
 		UI_Text[i].setString(L"0");
-		UI_Text[i].setScale(1, -1); //不知为何需要沿Y轴对称一下
 		UI_Text[i].setPosition((float)(186 + 186 * (i % 2) + 20 + window_Size[1]), (float)(200 + 180 * 2 - 180 * (i / 2) - 80));//坐标转换真麻烦 还要偏移window_Size[1]
 	}
+
+	char buffer[3] = "";
+
+	for (char i = 0; i < 10; i++)
+	{
+		sprintf_s(buffer, sizeof(buffer), "%d", i + 1);
+		number_Text[i].setFont(font);
+		number_Text[i].setFillColor(sf::Color(0x999999FF));
+		number_Text[i].setScale(0.5, -0.5);
+		number_Text[i].setString(buffer);
+		number_Text[i].setOrigin(number_Text[i].getGlobalBounds().width, number_Text[i].getGlobalBounds().height); //不理解为什么不除二
+	}
+	number_Text[9].setString("+");
 
 	for (char i = 0; i < 4; i++)
 	{
 		chess[i].setRadius(chess_Radius);
 		chess[i].setOrigin((float)chess_Radius, (float)chess_Radius);
 	}
+	for (char i = 4; i < 6; i++)
+	{
+		chess[i].setRadius(UI_Chess_Radius);
+		chess[i].setOrigin((float)UI_Chess_Radius, (float)UI_Chess_Radius);
+	}
+
 	chess[0].setFillColor(sf::Color(0x000000FF));
 	chess[1].setFillColor(sf::Color(0xFFFFFFFF));
 	chess[2].setFillColor(sf::Color(0x00000033));
 	chess[3].setFillColor(sf::Color(0xFFFFFF66));
+	chess[4].setFillColor(sf::Color(0x000000FF));
+	chess[5].setFillColor(sf::Color(0xFFFFFFFF));
+
+	chess[4].setPosition(800,160);
+	chess[5].setPosition(800,160);
 
 	//for (char i = 0; i < 19; i++)
 	//	for (char j = 0; j < 19; j++)
@@ -189,7 +215,7 @@ DLL void keyborad(sf::Event::KeyEvent keyEvent)
 		window->close();
 		break;
 	case sf::Keyboard::Space:
-		draw_Belong = !draw_Belong;
+		draw_Details = !draw_Details;
 		update_Fream = true;
 		break;
 	default:
@@ -276,7 +302,7 @@ sf::Texture get_UI_Texture()
 	text[0].setString(L"数\n子\n法");
 	text[1].setString(L"数\n目\n法");
 	text[2].setString(L"重新游戏");
-	text[3].setString(L"显示范围");
+	text[3].setString(L"显示详情");
 	text[4].setString(L"围棋");
 
 	for (char i = 0; i < 5; i++)
@@ -293,7 +319,7 @@ sf::Texture get_UI_Texture()
 	}
 	for (char i = 2; i < 4; i++)
 	{
-		text[i].setPosition((float)(186 + 186 * (i % 2)), (float)(200 + 180 * 2));
+		text[i].setPosition((float)(200 + 186 * (i % 2)), (float)(200 + 180 * 2));
 		background.draw(text[i]);
 	}
 	text[4].setPosition(280, 60);
@@ -325,16 +351,26 @@ void draw()
 		{
 			chess[0].setPosition((float)(i * block_Size + block_Size / 2) + map_Offset, (float)(j * block_Size + block_Size / 2 + map_Offset));
 			fream.draw(chess[0]);
+			if (draw_Details)
+			{
+				number_Text[min(map[i][j].qi, 10) - 1].setPosition((float)(i * block_Size + block_Size / 2) + map_Offset, (float)(j * block_Size + block_Size / 2 + map_Offset));
+				fream.draw(number_Text[min(map[i][j].qi, 10) - 1]);
+			}
 			continue;
 		}
 		if (map[i][j].qi < 0)
 		{
 			chess[1].setPosition((float)(i * block_Size + block_Size / 2) + map_Offset, (float)(j * block_Size + block_Size / 2 + map_Offset));
 			fream.draw(chess[1]);
+			if (draw_Details)
+			{
+				number_Text[min(-map[i][j].qi, 10) - 1].setPosition((float)(i * block_Size + block_Size / 2) + map_Offset, (float)(j * block_Size + block_Size / 2 + map_Offset));
+				fream.draw(number_Text[min(-map[i][j].qi, 10) - 1]);
+			}
 			continue;
 		}
 
-		if (!draw_Belong) continue;
+		if (!draw_Details) continue;
 
 		if (map[i][j].belong > 0)
 		{
@@ -361,6 +397,8 @@ void draw()
 			UI_Text[i].setString(buffer);
 			fream.draw(UI_Text[i]);
 		}
+
+		fream.draw(chess[next_Color ? 4 : 5]);
 	}
 
 	printf_s("draw\n");
