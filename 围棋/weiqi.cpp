@@ -411,8 +411,17 @@ void spread_Qi(char x, char y, short qi, char color)
 
 	if (map[x][y].checked) return; //已经检查
 	map[x][y].checked = true; //标记检查
-
-	if (map[x][y].qi * color <= 0) return; //不同颜色或空，直接返回 应该不会溢出吧
+	
+	if (map[x][y].qi == 0) return; //空，直接返回
+	if (map[x][y].qi * color < 0) //不同颜色 
+	{
+		if (qi == 0) //棋死亡
+		{
+			map[x][y].qi > 0 ? map[x][y].qi++ : map[x][y].qi--; //气加一
+			spread_Qi(x, y);
+		}
+		return;
+	}
 
 	map[x][y].qi = qi; //相同颜色
 	spread_Qi(x - 1, y, qi, color);//遍历
