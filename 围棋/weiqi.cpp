@@ -55,7 +55,6 @@ sf::Texture chess_Texture[2];
 //sf::Sprite chess[19][19];
 sf::CircleShape chess[4];
 
-
 DLL void init(sf::RenderWindow* window)
 {
 	running = true;
@@ -448,10 +447,10 @@ void compute_Belong(char depth)
 		{
 			//遍历每一个位置
 			buffer[i][j] = buffer[i][j] / 10 * 6; //3/5留
-			if (i != 00 && map[i][j].qi == 0) buffer[i][j] += map[i - 1][j].belong / 10; //2/5出
-			if (i != 18 && map[i][j].qi == 0) buffer[i][j] += map[i + 1][j].belong / 10;
-			if (j != 00 && map[i][j].qi == 0) buffer[i][j] += map[i][j - 1].belong / 10;
-			if (j != 18 && map[i][j].qi == 0) buffer[i][j] += map[i][j + 1].belong / 10;
+			if (i != 00 && map[i - 1][j].qi == 0) buffer[i][j] += map[i - 1][j].belong / 10; //2/5出
+			if (i != 18 && map[i + 1][j].qi == 0) buffer[i][j] += map[i + 1][j].belong / 10;
+			if (j != 00 && map[i][j - 1].qi == 0) buffer[i][j] += map[i][j - 1].belong / 10;
+			if (j != 18 && map[i][j + 1].qi == 0) buffer[i][j] += map[i][j + 1].belong / 10;
 		}
 
 		//由buffer到map
@@ -459,10 +458,10 @@ void compute_Belong(char depth)
 		{
 			//遍历每一个位置
 			map[i][j].belong = map[i][j].belong / 10 * 6; //3/5留
-			if (i != 00 && map[i][j].qi == 0) map[i][j].belong += buffer[i - 1][j] / 10; //2/5出
-			if (i != 18 && map[i][j].qi == 0) map[i][j].belong += buffer[i + 1][j] / 10;
-			if (j != 00 && map[i][j].qi == 0) map[i][j].belong += buffer[i][j - 1] / 10;
-			if (j != 18 && map[i][j].qi == 0) map[i][j].belong += buffer[i][j + 1] / 10;
+			if (i != 00 && map[i - 1][j].qi == 0) map[i][j].belong += buffer[i - 1][j] / 10; //2/5出
+			if (i != 18 && map[i + 1][j].qi == 0) map[i][j].belong += buffer[i + 1][j] / 10;
+			if (j != 00 && map[i][j - 1].qi == 0) map[i][j].belong += buffer[i][j - 1] / 10;
+			if (j != 18 && map[i][j + 1].qi == 0) map[i][j].belong += buffer[i][j + 1] / 10;
 		}
 	}
 
