@@ -12,9 +12,10 @@ constexpr int UI_Chess_Radius = 20;
 constexpr int block_Size = 1080 * 2 / 3 / 19;
 constexpr int window_Size[2] = { 1920 * 2 / 3, 1080 * 2 / 3 };
 
-constexpr char black = 100;
-constexpr char white = -100;
 constexpr int map_Offset = (1080 * 2 / 3 - 37 * 19) / 2;
+
+constexpr int text_Position[2][4] = { 860,550,980 - text_Position[0][0],580-text_Position[0][1],
+	1050,550,1170 - text_Position[1][0],580 - text_Position[1][1] };
 
 namespace checked
 {
@@ -69,6 +70,7 @@ sf::Texture chess_Texture[2];
 sf::CircleShape chess[6];
 sf::Text UI_Text[4];
 sf::Text number_Text[10];
+sf::IntRect UI_Rect[2];
 
 DLL void init(sf::RenderWindow* window)
 {
@@ -108,6 +110,14 @@ DLL void init(sf::RenderWindow* window)
 		number_Text[i].setOrigin(number_Text[i].getGlobalBounds().width, number_Text[i].getGlobalBounds().height); //不理解为什么不除二
 	}
 	number_Text[9].setString("+");
+
+	for (char i = 0; i < 2; i++)
+	{
+		UI_Rect[i].left = text_Position[i][0];
+		UI_Rect[i].top = text_Position[i][1];
+		UI_Rect[i].width = text_Position[i][2];
+		UI_Rect[i].height = text_Position[i][3];
+	}
 
 	for (char i = 0; i < 4; i++)
 	{
@@ -212,6 +222,29 @@ DLL void click(sf::Event::MouseButtonEvent mouseEvent)
 				printf_s("put %d %d = %d\n", subscript[0], subscript[1], map[subscript[0]][subscript[1]].qi);
 			}
 		}
+	}
+
+	//非棋盘区域
+
+	if (UI_Rect[0].contains((sf::Vector2i)position))
+	{
+		//重开
+		for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
+		{
+			map[i][j].qi = 0;
+			map[i][j].belong = 0;
+		}
+		next_Color = true;
+		update_Fream = true;
+		printf_s("restart\n");
+	}
+
+	if (UI_Rect[1].contains((sf::Vector2i)position))
+	{
+		//显示详情
+		draw_Details = !draw_Details;
+		update_Fream = true;
+		printf_s("show detail\n");
 	}
 }
 
