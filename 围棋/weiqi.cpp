@@ -521,6 +521,8 @@ void spread_Qi(char x, char y, short qi, char color, char checked_true, bool exc
 	{
 		if (map[x][y].qi != 0) //有子
 		{
+			if (checked_true == checked::spread_true) map[x][y].checked &= checked::spread_false; //可能导致多次更新，标记需要重置
+
 			short new_qi = check_Qi(x, y);
 			if (map[x][y].qi == new_qi) return; //前后无差，直接返回
 
