@@ -47,13 +47,13 @@ spread 7 17 = 0
 spread 8 17 = 0
 [debug]spread at 7 17 param qi = 0 color = -1 checked_true = 2
 [debug]spread at 9 17 param qi = 0 color = -1 checked_true = 2
-[debug]spread at 9 17 param qi = 2 color = 1 checked_true = 4
+[debug]spread at 9 17 param qi = 2 color = 1 checked_true = 4 //9，17
 [debug]spread at 8 16 param qi = 0 color = -1 checked_true = 2
 spread 8 16 = 0
 [debug]spread at 7 16 param qi = 0 color = -1 checked_true = 2
 [debug]spread at 7 16 param qi = 7 color = 1 checked_true = 4
 [debug]spread at 9 16 param qi = 0 color = -1 checked_true = 2
-[debug]spread at 9 16 param qi = 3 color = 1 checked_true = 4
+[debug]spread at 9 16 param qi = 3 color = 1 checked_true = 4 //9，16
 [debug]spread at 8 15 param qi = 0 color = -1 checked_true = 2
 [debug]spread at 8 15 param qi = 3 color = 1 checked_true = 4
 spread 8 15 = 3

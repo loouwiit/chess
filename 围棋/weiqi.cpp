@@ -26,7 +26,7 @@ namespace checked
 	constexpr char spread_false = ~spread_true;
 
 	constexpr char spread_Zero_true = 1 << 2;
-	constexpr char spread_Zero_false = ~spread_true;
+	constexpr char spread_Zero_false = ~spread_Zero_true;
 }
 
 struct map_t
@@ -516,11 +516,14 @@ void spread_Qi(char x, char y, short qi, char color, char checked_true)
 	{
 		if (qi != 0) return; //没有死亡，直接返回
 
+		if (checked_true == checked::spread_true) map[x][y].checked &= checked::spread_false; //可能导致多次更新，标记需要重置
+
 		short new_qi = check_Qi(x, y);
 		if (map[x][y].qi == new_qi) return; //前后无差，直接返回
 
 		for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
-			map[x][y].checked &= checked::spread_Zero_false;
+			map[i][j].checked &= checked::spread_Zero_false; //重置子传播标志
+		printf_s("zero %d %d = %d", x, y, new_qi);
 		spread_Qi(x, y, new_qi, map[x][y].qi > 0 ? 1 : -1, checked::spread_Zero_true); //有区别，进行传播
 		return;
 	}
