@@ -16,11 +16,23 @@ constexpr char black = 100;
 constexpr char white = -100;
 constexpr int map_Offset = (1080 * 2 / 3 - 37 * 19) / 2;
 
+namespace checked
+{
+	constexpr char check_true = 1 << 0;
+	constexpr char check_false = ~check_true;
+
+	constexpr char spread_true = 1 << 1;
+	constexpr char spread_false = ~spread_true;
+
+	constexpr char spread_Zero_true = 1 << 2;
+	constexpr char spread_Zero_false = ~spread_true;
+}
+
 struct map_t
 {
-	short qi;//气 因为符号所以要用两字节
-	short belong;//归属
-	bool checked;//气被计算过
+	short qi = 0;//气 因为符号所以要用两字节
+	short belong = 0;//归属
+	char checked = 0;//气被计算过
 };
 
 sf::Texture get_Map_Texture();
@@ -30,7 +42,7 @@ void draw();
 void compute_Qi(char x, char y);//计算并更新气
 short check_Qi(char x, char y, short self_Color = 0);//计算气
 void spread_Qi(char x, char y);//传播气
-void spread_Qi(char x, char y, short qi, char color);//传播气
+void spread_Qi(char x, char y, short qi, char color ,char checked_true = checked::spread_true);//传播气
 
 void compute_Belong(char depth);//计算归属
 
@@ -153,6 +165,9 @@ DLL void click(sf::Event::MouseButtonEvent mouseEvent)
 {
 	sf::Vector2f position = window->mapPixelToCoords({ mouseEvent.x, mouseEvent.y });
 
+	printf_s("click %d %d\n", (int)position.x, (int)position.y);
+	printf_s("mouse %d %d\n", (int)mouseEvent.x, (int)mouseEvent.y);
+
 	char subscript[2] = { -1, -1 };
 
 	subscript[0] = ((int)position.x - map_Offset) / block_Size;
@@ -194,12 +209,10 @@ DLL void click(sf::Event::MouseButtonEvent mouseEvent)
 				next_Color = !next_Color; //轮流持子
 				compute_Belong(3);
 				update_Fream = true;
-				printf_s("put %d %d 气：%d\n", subscript[0], subscript[1], map[subscript[0]][subscript[1]].qi);
+				printf_s("put %d %d = %d\n", subscript[0], subscript[1], map[subscript[0]][subscript[1]].qi);
 			}
 		}
 	}
-	printf_s("click %d %d\n", (int)position.x, (int)position.y);
-	printf_s("mouse %d %d\n", (int)mouseEvent.x, (int)mouseEvent.y);
 }
 
 DLL void mouse(sf::Event::MouseMoveEvent mouseEvent)
@@ -413,9 +426,9 @@ void compute_Qi(char x, char y)
 
 	if (map[x][y].qi == 0) return;//空
 
-	qi = check_Qi(x, y); //会使用checked
+	qi = check_Qi(x, y); //会使用checked checked已分离，不必担心
 	for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
-		map[i][j].checked = false; //初始化checked
+		map[i][j].checked &= checked::spread_false; //初始化checked
 	spread_Qi(x, y, qi, map[x][y].qi > 0 ? 1 : -1); //传播气 有可能传入0，所以需要color限制
 }
 
@@ -430,11 +443,11 @@ short check_Qi(char x, char y, short self_Color) //单线程，非线程安全
 	{
 		self_Color = map[x][y].qi > 0 ? 1 : -1; //设定自己的颜色 限制大小防止后续溢出 存在0的情况 但是0会被空return掉
 		for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
-			map[i][j].checked = false; //初始化checked
+			map[i][j].checked &= checked::check_false; //初始化checked
 	}
 
-	if (map[x][y].checked) return 0; //已经检查
-	map[x][y].checked = true; //标记检查
+	if (map[x][y].checked & checked::check_true) return 0; //已经检查
+	map[x][y].checked |= checked::check_true; //标记检查
 
 	if (map[x][y].qi == 0) return 1; //空
 
@@ -451,34 +464,40 @@ short check_Qi(char x, char y, short self_Color) //单线程，非线程安全
 void spread_Qi(char x, char y) //单线程，非线程安全
 {
 	for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
-		map[i][j].checked = false; //初始化checked
+		map[i][j].checked &= checked::spread_false; //初始化checked
 	spread_Qi(x, y, map[x][y].qi, map[x][y].qi > 0 ? 1 : -1);
 }
 
-void spread_Qi(char x, char y, short qi, char color)
+void spread_Qi(char x, char y, short qi, char color, char checked_true)
 {
+	printf_s("[debug]spread at %d %d param qi = %d color = %d checked_true = %d\n", x, y, qi, color, checked_true);
+
 	if (x < 0 || x > 18) return;
 	if (y < 0 || y > 18) return; //越界
 
-	if (map[x][y].checked) return; //已经检查
-	map[x][y].checked = true; //标记检查
+	if (map[x][y].checked & checked_true) return; //已经检查
+	map[x][y].checked |= checked_true; //标记检查
 	
 	if (map[x][y].qi == 0) return; //空，直接返回
 	if (map[x][y].qi * color < 0) //不同颜色 
 	{
-		if (qi == 0) //棋死亡
-		{
-			map[x][y].qi > 0 ? map[x][y].qi++ : map[x][y].qi--; //气加一
-			spread_Qi(x, y);
-		}
+		if (qi != 0) return; //没有死亡，直接返回
+
+		short new_qi = check_Qi(x, y);
+		if (map[x][y].qi == new_qi) return; //前后无差，直接返回
+
+		for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
+			map[x][y].checked &= checked::spread_Zero_false;
+		spread_Qi(x, y, new_qi, map[x][y].qi > 0 ? 1 : -1, checked::spread_Zero_true); //有区别，进行传播
 		return;
 	}
 
 	map[x][y].qi = qi; //相同颜色
-	spread_Qi(x - 1, y, qi, color);//遍历
-	spread_Qi(x + 1, y, qi, color);//遍历
-	spread_Qi(x, y - 1, qi, color);//遍历
-	spread_Qi(x, y + 1, qi, color);//遍历
+	printf_s("spread %d %d = %d\n", x, y, qi);
+	spread_Qi(x - 1, y, qi, color, checked_true);//遍历
+	spread_Qi(x + 1, y, qi, color, checked_true);//遍历
+	spread_Qi(x, y - 1, qi, color, checked_true);//遍历
+	spread_Qi(x, y + 1, qi, color, checked_true);//遍历
 }
 
 void compute_Belong(char depth)
