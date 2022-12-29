@@ -43,7 +43,7 @@ void draw();
 void compute_Qi(char x, char y);//计算并更新气
 short check_Qi(char x, char y, short self_Color = 0);//计算气
 void spread_Qi(char x, char y);//传播气
-void spread_Qi(char x, char y, short qi, char color ,char checked_true = checked::spread_true);//传播气
+void spread_Qi(char x, char y, short qi, char color, char checked_true = checked::spread_true, bool except_Self = false);//传播气
 
 void compute_Belong(char depth);//计算归属
 
@@ -220,6 +220,12 @@ DLL void click(sf::Event::MouseButtonEvent mouseEvent)
 				compute_Belong(3);
 				update_Fream = true;
 				printf_s("put %d %d = %d\n", subscript[0], subscript[1], map[subscript[0]][subscript[1]].qi);
+			}
+			else
+			{
+				for (char i = 0; i < 19; i++)for (char j = 0; j < 19; j++)
+					map[i][j].checked &= checked::spread_false;//移除标志
+				spread_Qi(subscript[0], subscript[1], 1, 0, checked::spread_true, true);//放置回去 忽略自己
 			}
 		}
 	}
@@ -501,18 +507,43 @@ void spread_Qi(char x, char y) //单线程，非线程安全
 	spread_Qi(x, y, map[x][y].qi, map[x][y].qi > 0 ? 1 : -1);
 }
 
-void spread_Qi(char x, char y, short qi, char color, char checked_true)
+void spread_Qi(char x, char y, short qi, char color, char checked_true, bool except_Self)
 {
-	printf_s("[debug]spread at %d %d param qi = %d color = %d checked_true = %d\n", x, y, qi, color, checked_true);
+	//printf_s("[debug]spread at %d %d param qi = %d color = %d checked_true = %d\n", x, y, qi, color, checked_true);
 
 	if (x < 0 || x > 18) return;
 	if (y < 0 || y > 18) return; //越界
 
 	if (map[x][y].checked & checked_true) return; //已经检查
 	map[x][y].checked |= checked_true; //标记检查
+
+	if (color == 0) //放置模式
+	{
+		if (map[x][y].qi != 0) //有子
+		{
+			short new_qi = check_Qi(x, y);
+			if (map[x][y].qi == new_qi) return; //前后无差，直接返回
+
+			for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
+				map[i][j].checked &= checked::spread_Zero_false; //重置子传播标志
+			printf_s("reput %d %d = %d\n", x, y, new_qi);
+			spread_Qi(x, y, new_qi, map[x][y].qi > 0 ? 1 : -1, checked::spread_Zero_true); //有区别，进行传播
+			return;
+		}
+
+		if (!except_Self) map[x][y].qi = qi; //第一个不放置
+
+		spread_Qi(x - 1, y, qi, color, checked_true);//遍历
+		spread_Qi(x + 1, y, qi, color, checked_true);//遍历
+		spread_Qi(x, y - 1, qi, color, checked_true);//遍历
+		spread_Qi(x, y + 1, qi, color, checked_true);//遍历
+
+		return;
+	}
 	
-	if (map[x][y].qi == 0) return; //空，直接返回
-	if (map[x][y].qi * color < 0) //不同颜色 
+	if (map[x][y].qi == 0) return; //空且非放置模式，直接返回
+
+	if (map[x][y].qi * color < 0) //不同颜色
 	{
 		if (qi != 0) return; //没有死亡，直接返回
 
