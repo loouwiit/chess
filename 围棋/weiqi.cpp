@@ -466,6 +466,7 @@ void compute_Qi(char x, char y)
 	if (map[x][y].qi == 0) return;//空
 
 	qi = check_Qi(x, y); //会使用checked checked已分离，不必担心
+	if (map[x][y].qi == qi) return; //数值相同，直接返回
 	for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
 		map[i][j].checked &= checked::spread_false; //初始化checked
 	spread_Qi(x, y, qi, map[x][y].qi > 0 ? 1 : -1); //传播气 有可能传入0，所以需要color限制
