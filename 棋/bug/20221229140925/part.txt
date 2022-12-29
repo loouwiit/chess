@@ -1,0 +1,103 @@
+click 247 33
+mouse 247 33
+[debug]spread at 7 18 param qi = 2 color = 1 checked_true = 2
+spread 7 18 = 2
+[debug]spread at 6 18 param qi = 2 color = 1 checked_true = 2
+spread 6 18 = 2
+[debug]spread at 5 18 param qi = 2 color = 1 checked_true = 2
+[debug]spread at 7 18 param qi = 2 color = 1 checked_true = 2
+[debug]spread at 6 17 param qi = 2 color = 1 checked_true = 2
+[debug]spread at 6 19 param qi = 2 color = 1 checked_true = 2
+[debug]spread at 8 18 param qi = 2 color = 1 checked_true = 2
+spread 8 18 = 2
+[debug]spread at 7 18 param qi = 2 color = 1 checked_true = 2
+[debug]spread at 9 18 param qi = 2 color = 1 checked_true = 2
+[debug]spread at 8 17 param qi = 2 color = 1 checked_true = 2
+[debug]spread at 8 19 param qi = 2 color = 1 checked_true = 2
+[debug]spread at 7 17 param qi = 2 color = 1 checked_true = 2
+[debug]spread at 7 19 param qi = 2 color = 1 checked_true = 2
+[debug]spread at 6 17 param qi = 0 color = -1 checked_true = 2
+spread 6 17 = 0
+[debug]spread at 5 17 param qi = 0 color = -1 checked_true = 2
+[debug]spread at 5 17 param qi = 5 color = 1 checked_true = 4
+spread 5 17 = 5
+[debug]spread at 4 17 param qi = 5 color = 1 checked_true = 4
+[debug]spread at 6 17 param qi = 5 color = 1 checked_true = 4
+[debug]spread at 5 16 param qi = 5 color = 1 checked_true = 4
+spread 5 16 = 5
+[debug]spread at 4 16 param qi = 5 color = 1 checked_true = 4
+[debug]spread at 6 16 param qi = 5 color = 1 checked_true = 4
+spread 6 16 = 5
+[debug]spread at 5 16 param qi = 5 color = 1 checked_true = 4
+[debug]spread at 7 16 param qi = 5 color = 1 checked_true = 4
+spread 7 16 = 5
+[debug]spread at 6 16 param qi = 5 color = 1 checked_true = 4
+[debug]spread at 8 16 param qi = 5 color = 1 checked_true = 4
+[debug]spread at 7 15 param qi = 5 color = 1 checked_true = 4
+[debug]spread at 7 17 param qi = 5 color = 1 checked_true = 4
+[debug]spread at 6 15 param qi = 5 color = 1 checked_true = 4
+[debug]spread at 6 17 param qi = 5 color = 1 checked_true = 4
+[debug]spread at 5 15 param qi = 5 color = 1 checked_true = 4
+[debug]spread at 5 17 param qi = 5 color = 1 checked_true = 4
+[debug]spread at 5 18 param qi = 5 color = 1 checked_true = 4
+[debug]spread at 7 17 param qi = 0 color = -1 checked_true = 2
+spread 7 17 = 0
+[debug]spread at 6 17 param qi = 0 color = -1 checked_true = 2
+[debug]spread at 8 17 param qi = 0 color = -1 checked_true = 2
+spread 8 17 = 0
+[debug]spread at 7 17 param qi = 0 color = -1 checked_true = 2
+[debug]spread at 9 17 param qi = 0 color = -1 checked_true = 2
+[debug]spread at 9 17 param qi = 2 color = 1 checked_true = 4
+[debug]spread at 8 16 param qi = 0 color = -1 checked_true = 2
+spread 8 16 = 0
+[debug]spread at 7 16 param qi = 0 color = -1 checked_true = 2
+[debug]spread at 7 16 param qi = 7 color = 1 checked_true = 4
+[debug]spread at 9 16 param qi = 0 color = -1 checked_true = 2
+[debug]spread at 9 16 param qi = 3 color = 1 checked_true = 4
+[debug]spread at 8 15 param qi = 0 color = -1 checked_true = 2
+[debug]spread at 8 15 param qi = 3 color = 1 checked_true = 4
+spread 8 15 = 3
+[debug]spread at 7 15 param qi = 3 color = 1 checked_true = 4
+[debug]spread at 9 15 param qi = 3 color = 1 checked_true = 4
+[debug]spread at 8 14 param qi = 3 color = 1 checked_true = 4
+spread 8 14 = 3
+[debug]spread at 7 14 param qi = 3 color = 1 checked_true = 4
+[debug]spread at 9 14 param qi = 3 color = 1 checked_true = 4
+[debug]spread at 8 13 param qi = 3 color = 1 checked_true = 4
+[debug]spread at 8 15 param qi = 3 color = 1 checked_true = 4
+[debug]spread at 8 16 param qi = 3 color = 1 checked_true = 4
+[debug]spread at 8 17 param qi = 0 color = -1 checked_true = 2
+[debug]spread at 8 18 param qi = 0 color = -1 checked_true = 2
+[debug]spread at 8 18 param qi = 5 color = 1 checked_true = 4
+[debug]spread at 7 16 param qi = 0 color = -1 checked_true = 2
+[debug]spread at 7 16 param qi = 7 color = 1 checked_true = 4
+[debug]spread at 7 18 param qi = 0 color = -1 checked_true = 2
+[debug]spread at 7 18 param qi = 5 color = 1 checked_true = 4
+[debug]spread at 6 16 param qi = 0 color = -1 checked_true = 2
+[debug]spread at 6 16 param qi = 7 color = 1 checked_true = 4
+[debug]spread at 6 18 param qi = 0 color = -1 checked_true = 2
+[debug]spread at 6 18 param qi = 5 color = 1 checked_true = 4
+spread 6 18 = 5
+[debug]spread at 5 18 param qi = 5 color = 1 checked_true = 4
+[debug]spread at 7 18 param qi = 5 color = 1 checked_true = 4
+[debug]spread at 6 17 param qi = 5 color = 1 checked_true = 4
+[debug]spread at 6 19 param qi = 5 color = 1 checked_true = 4
+[debug]spread at 6 18 param qi = 5 color = 1 checked_true = 2
+spread 6 18 = 5
+[debug]spread at 5 18 param qi = 5 color = 1 checked_true = 2
+[debug]spread at 7 18 param qi = 5 color = 1 checked_true = 2
+spread 7 18 = 5
+[debug]spread at 6 18 param qi = 5 color = 1 checked_true = 2
+[debug]spread at 8 18 param qi = 5 color = 1 checked_true = 2
+spread 8 18 = 5
+[debug]spread at 7 18 param qi = 5 color = 1 checked_true = 2
+[debug]spread at 9 18 param qi = 5 color = 1 checked_true = 2
+[debug]spread at 8 17 param qi = 5 color = 1 checked_true = 2
+[debug]spread at 8 19 param qi = 5 color = 1 checked_true = 2
+[debug]spread at 7 17 param qi = 5 color = 1 checked_true = 2
+[debug]spread at 7 19 param qi = 5 color = 1 checked_true = 2
+[debug]spread at 6 17 param qi = 5 color = 1 checked_true = 2
+[debug]spread at 6 19 param qi = 5 color = 1 checked_true = 2
+wins 5 -1
+put 6 18 = 5
+draw

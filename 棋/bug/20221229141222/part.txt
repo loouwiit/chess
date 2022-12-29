@@ -1,0 +1,85 @@
+此局与20221229140925为同一版本
+
+click 205 253
+mouse 205 253
+[debug]spread at 6 12 param qi = 0 color = 1 checked_true = 2
+spread 6 12 = 0
+[debug]spread at 5 12 param qi = 0 color = 1 checked_true = 2
+[debug]spread at 5 12 param qi = -4 color = -1 checked_true = 4
+spread 5 12 = -4
+[debug]spread at 4 12 param qi = -4 color = -1 checked_true = 4
+[debug]spread at 6 12 param qi = -4 color = -1 checked_true = 4
+[debug]spread at 5 11 param qi = -4 color = -1 checked_true = 4
+[debug]spread at 5 13 param qi = -4 color = -1 checked_true = 4
+[debug]spread at 7 12 param qi = 0 color = 1 checked_true = 2
+spread 7 12 = 0
+[debug]spread at 6 12 param qi = 0 color = 1 checked_true = 2
+[debug]spread at 8 12 param qi = 0 color = 1 checked_true = 2
+spread 8 12 = 0
+[debug]spread at 7 12 param qi = 0 color = 1 checked_true = 2
+[debug]spread at 9 12 param qi = 0 color = 1 checked_true = 2
+spread 9 12 = 0
+[debug]spread at 8 12 param qi = 0 color = 1 checked_true = 2
+[debug]spread at 10 12 param qi = 0 color = 1 checked_true = 2
+[debug]spread at 10 12 param qi = -4 color = -1 checked_true = 4
+spread 10 12 = -4
+[debug]spread at 9 12 param qi = -4 color = -1 checked_true = 4
+[debug]spread at 11 12 param qi = -4 color = -1 checked_true = 4
+[debug]spread at 10 11 param qi = -4 color = -1 checked_true = 4
+[debug]spread at 10 13 param qi = -4 color = -1 checked_true = 4
+[debug]spread at 9 11 param qi = 0 color = 1 checked_true = 2
+[debug]spread at 9 11 param qi = -10 color = -1 checked_true = 4
+spread 9 11 = -10
+[debug]spread at 8 11 param qi = -10 color = -1 checked_true = 4
+spread 8 11 = -10
+[debug]spread at 7 11 param qi = -10 color = -1 checked_true = 4
+spread 7 11 = -10
+[debug]spread at 6 11 param qi = -10 color = -1 checked_true = 4
+spread 6 11 = -10
+[debug]spread at 5 11 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 7 11 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 6 10 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 6 12 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 8 11 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 7 10 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 7 12 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 9 11 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 8 10 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 8 12 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 10 11 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 9 10 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 9 12 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 9 13 param qi = 0 color = 1 checked_true = 2
+[debug]spread at 9 13 param qi = -10 color = -1 checked_true = 4
+spread 9 13 = -10
+[debug]spread at 8 13 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 10 13 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 9 12 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 9 14 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 8 11 param qi = 0 color = 1 checked_true = 2
+[debug]spread at 8 13 param qi = 0 color = 1 checked_true = 2
+[debug]spread at 8 13 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 7 11 param qi = 0 color = 1 checked_true = 2
+[debug]spread at 7 13 param qi = 0 color = 1 checked_true = 2
+[debug]spread at 7 13 param qi = -10 color = -1 checked_true = 4
+spread 7 13 = -10
+[debug]spread at 6 13 param qi = -10 color = -1 checked_true = 4
+spread 6 13 = -10
+[debug]spread at 5 13 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 7 13 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 6 12 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 6 14 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 8 13 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 7 12 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 7 14 param qi = -10 color = -1 checked_true = 4
+[debug]spread at 6 11 param qi = 0 color = 1 checked_true = 2
+[debug]spread at 6 13 param qi = 0 color = 1 checked_true = 2
+[debug]spread at 5 12 param qi = -4 color = -1 checked_true = 2
+spread 5 12 = -4
+[debug]spread at 4 12 param qi = -4 color = -1 checked_true = 2
+[debug]spread at 6 12 param qi = -4 color = -1 checked_true = 2
+[debug]spread at 5 11 param qi = -4 color = -1 checked_true = 2
+[debug]spread at 5 13 param qi = -4 color = -1 checked_true = 2
+wins -124 -114
+put 5 12 = -4
+draw
