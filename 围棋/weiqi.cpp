@@ -523,7 +523,7 @@ void spread_Qi(char x, char y, short qi, char color, char checked_true)
 
 		for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
 			map[i][j].checked &= checked::spread_Zero_false; //重置子传播标志
-		printf_s("zero %d %d = %d", x, y, new_qi);
+		printf_s("zero %d %d = %d\n", x, y, new_qi);
 		spread_Qi(x, y, new_qi, map[x][y].qi > 0 ? 1 : -1, checked::spread_Zero_true); //有区别，进行传播
 		return;
 	}
