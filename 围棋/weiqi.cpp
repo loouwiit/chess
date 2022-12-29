@@ -225,7 +225,7 @@ DLL void click(sf::Event::MouseButtonEvent mouseEvent)
 			{
 				for (char i = 0; i < 19; i++)for (char j = 0; j < 19; j++)
 					map[i][j].checked &= checked::spread_false;//移除标志
-				spread_Qi(subscript[0], subscript[1], 1, 0, checked::spread_true, true);//放置回去 忽略自己
+				spread_Qi(subscript[0], subscript[1], next_Color ? 1 : -1, 0, checked::spread_true, true);//放置回去 忽略自己
 			}
 		}
 	}
