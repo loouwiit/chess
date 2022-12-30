@@ -189,7 +189,7 @@ DLL void click(sf::Event::MouseButtonEvent mouseEvent)
 	sf::Vector2f position = window->mapPixelToCoords({ mouseEvent.x, mouseEvent.y });
 
 	//printf_s("click %d %d\n", (int)position.x, (int)position.y);
-	printf_s("mouse %d %d\n", (int)mouseEvent.x, (int)mouseEvent.y);
+	//printf_s("mouse %d %d\n", (int)mouseEvent.x, (int)mouseEvent.y);
 
 	char subscript[2] = { -1, -1 };
 
@@ -466,13 +466,26 @@ void draw()
 		//渲染胜负
 		{
 			wchar_t buffer[20] = L"黑白相当";
-			if (wins[0] * wins[1] > 0)
+			if (wins[0] * wins[1] == 0)
+			{
+				//有零
+				if (wins[0] != wins[1])
+				{
+					//一个零
+					if (wins[0] > 0) swprintf_s(buffer, sizeof(buffer) / sizeof(wchar_t), L"黑领先白%d子", wins[0]);
+					else if (wins[0] < 0) swprintf_s(buffer, sizeof(buffer) / sizeof(wchar_t), L"白领先黑%d子", wins[0]);
+					else if (wins[1] > 0) swprintf_s(buffer, sizeof(buffer) / sizeof(wchar_t), L"黑领先白%d目", wins[1]);
+					else if (wins[1] < 0) swprintf_s(buffer, sizeof(buffer) / sizeof(wchar_t), L"白领先黑%d目", wins[1]);
+				}
+				//两个零
+			}
+			else if (wins[0] * wins[1] > 0)
 			{
 				//同号
-				if (wins[0] > 0) swprintf_s(buffer, sizeof(buffer)/sizeof(wchar_t), L"黑领先白%d(%d)", wins[0], wins[1]);
-				else swprintf_s(buffer, sizeof(buffer) / sizeof(wchar_t), L"白领先黑%d(%d)", -wins[0], -wins[1]);
+				if (wins[0] > 0) swprintf_s(buffer, sizeof(buffer)/sizeof(wchar_t), L"黑领先白%d子%d目", wins[0], wins[1]);
+				else swprintf_s(buffer, sizeof(buffer) / sizeof(wchar_t), L"白领先黑%d子%d目", -wins[0], -wins[1]);
 			}
-			else if (wins[0] != 0 && wins[1] != 0)
+			else
 			{
 				//异号
 				if (wins[0] > 0) swprintf_s(buffer, sizeof(buffer) / sizeof(wchar_t), L"黑领先白%d子，白领先黑%d目", wins[0], -wins[1]);
