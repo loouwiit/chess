@@ -108,7 +108,7 @@ bool load_DLL(const char path[])
 	}
 
 	hDLL = LoadLibraryA(path);
-	if (hDLL == nullptr) { FreeLibrary(hDLL); return false; }
+	if (hDLL == nullptr) { /*FreeLibrary(hDLL);*/ return false; } //C6387 hDLL == NULL 但是_IN_不应传入NULL
 
 	init = (void (*)(sf::RenderWindow*)) GetProcAddress(hDLL, "init");
 	if (init == nullptr) { FreeLibrary(hDLL); return false; }
