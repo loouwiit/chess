@@ -2,12 +2,25 @@
 #include <Windows.h>
 #include <SFML/Graphics.hpp>
 
+#pragma region main函数定义
+#ifdef _DEBUG
+#define MAIN int main(int argc, char* argv[])
+#else
+#ifdef WIN32
+#include <wtypes.h>
+#define MAIN int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+#else
+#define MAIN int WinMain(int argc, char* argv[])
+#endif
+#endif
+#pragma endregion
+
 constexpr int window_Size[2] = { 1920 * 2 / 3, 1080 * 2 / 3 };
-constexpr char loader_Path[] = "./dll/loader.dll";
+constexpr char loader_Path[] = ".\\dll\\loader.dll";
 
 using function_Pointer = void(*)(char dll_Path[]);
 
-int main(int argc,char * argv[]);
+MAIN;
 void initlize();
 bool load_DLL(const char path[]);
 void change_DLL();
@@ -27,7 +40,7 @@ sf::Font font;
 HINSTANCE hDLL;
 char* next_DLL_Path = nullptr;
 
-int main(int argc, char* argv[])
+MAIN
 {
 	initlize();
 
@@ -75,6 +88,10 @@ void initlize()
 	view.setCenter((float)(window_Size[0] / 2), (float)(window_Size[1] / 2));
 	window.setView(view);
 
+	sf::Image icon;
+	icon.loadFromFile("./res/棋.png");
+	window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+
 	sf::Text text;
 	if (!font.loadFromFile("C:/windows/fonts/msyh.ttc")) font.loadFromFile("C:/windos/fonts/msyh.ttf");
 	text.setFont(font);
@@ -111,7 +128,8 @@ bool load_DLL(const char path[])
 		return true;
 	}
 
-	hDLL = LoadLibraryA(path);
+	//printf_s("%s\n", path);
+	hDLL = LoadLibraryA(path); //勿用'/'，要用'\\'
 	if (hDLL == nullptr) { /*FreeLibrary(hDLL);*/ return false; } //C6387 hDLL == NULL 但是_IN_不应传入NULL
 
 	init = (void (*)(sf::RenderWindow*, function_Pointer)) GetProcAddress(hDLL, "init");

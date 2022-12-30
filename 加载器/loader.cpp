@@ -84,6 +84,6 @@ DLL void ened(bool call_End_Function)
 {
 	if (!call_End_Function) return;
 	dll_Path = new char[100];
-	strcpy_s(dll_Path, 100, "./weiqi.dll");
+	strcpy_s(dll_Path, 100, ".\\dll\\weiqi.dll");
 	end_Function(dll_Path);
 }
