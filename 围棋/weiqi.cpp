@@ -3,7 +3,15 @@
 
 #define DLL extern "C" __declspec(dllexport)
 
-#pragma once
+using function_Pointer = void(*)(char dll_Path[]);
+
+DLL void init(sf::RenderWindow* window, function_Pointer end_Function);
+DLL void update();
+DLL void click(sf::Event::MouseButtonEvent mouseEvent);
+DLL void mouse(sf::Event::MouseMoveEvent mouseEvent);
+DLL void keyborad(sf::Event::KeyEvent keyEvent);
+DLL void sleep();
+DLL void ened(bool call_End_Function);
 
 constexpr int line_Width = 2;
 constexpr int circle_Radius = 4;
@@ -47,7 +55,6 @@ void spread_Qi(char x, char y, short qi, char color, char checked_true = checked
 
 void compute_Belong(char depth);//计算归属
 
-bool running = false;
 bool update_Fream = true;
 bool draw_Details = false;
 bool next_Color = true;
@@ -72,10 +79,13 @@ sf::Text UI_Text[3];
 sf::Text number_Text[10];
 sf::IntRect UI_Rect[2];
 
-DLL void init(sf::RenderWindow* window)
+function_Pointer end_Function = nullptr;
+
+DLL void init(sf::RenderWindow* window, function_Pointer end_Function)
 {
-	running = true;
+	//running = true;
 	::window = window;
+	::end_Function = end_Function;
 	fream.create(window_Size[0], window_Size[1]);
 
 	if (!font.loadFromFile("C:/windows/fonts/msyh.ttc")) font.loadFromFile("C:/windos/fonts/msyh.ttf");
@@ -280,7 +290,7 @@ DLL void keyborad(sf::Event::KeyEvent keyEvent)
 	switch (keyEvent.code)
 	{
 	case sf::Keyboard::Escape:
-		window->close();
+		ened(true);
 		break;
 	case sf::Keyboard::Space:
 		draw_Details = !draw_Details;
@@ -296,14 +306,9 @@ DLL void sleep()
 	sf::sleep(sf::milliseconds(100));
 }
 
-DLL bool is_Running()
+DLL void ened(bool call_End_Function)
 {
-	return running;
-}
-
-DLL void ened()
-{
-	running = false;
+	if (call_End_Function) end_Function(NULL);
 }
 
 sf::Texture get_Map_Texture()
@@ -473,9 +478,9 @@ void draw()
 				{
 					//一个零
 					if (wins[0] > 0) swprintf_s(buffer, sizeof(buffer) / sizeof(wchar_t), L"黑领先白%d子", wins[0]);
-					else if (wins[0] < 0) swprintf_s(buffer, sizeof(buffer) / sizeof(wchar_t), L"白领先黑%d子", wins[0]);
+					else if (wins[0] < 0) swprintf_s(buffer, sizeof(buffer) / sizeof(wchar_t), L"白领先黑%d子", -wins[0]);
 					else if (wins[1] > 0) swprintf_s(buffer, sizeof(buffer) / sizeof(wchar_t), L"黑领先白%d目", wins[1]);
-					else if (wins[1] < 0) swprintf_s(buffer, sizeof(buffer) / sizeof(wchar_t), L"白领先黑%d目", wins[1]);
+					else if (wins[1] < 0) swprintf_s(buffer, sizeof(buffer) / sizeof(wchar_t), L"白领先黑%d目", -wins[1]);
 				}
 				//两个零
 			}

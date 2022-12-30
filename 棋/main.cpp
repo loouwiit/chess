@@ -3,24 +3,29 @@
 #include <SFML/Graphics.hpp>
 
 constexpr int window_Size[2] = { 1920 * 2 / 3, 1080 * 2 / 3 };
+constexpr char loader_Path[] = "./dll/loader.dll";
+
+using function_Pointer = void(*)(char dll_Path[]);
 
 int main(int argc,char * argv[]);
 void initlize();
 bool load_DLL(const char path[]);
+void change_DLL();
+void return_Function(char path[]);
 
-void (*init)(sf::RenderWindow* window) = nullptr;
+void (*init)(sf::RenderWindow* window, function_Pointer end_Function) = nullptr;
 void (*update)(void) = nullptr;
 void (*click)(sf::Event::MouseButtonEvent mouseEvent) = nullptr;
 void (*mouse)(sf::Event::MouseMoveEvent mouseEvent) = nullptr;
 void (*keyborad)(sf::Event::KeyEvent keyEvent) = nullptr;
 void (*sleep)(void) = nullptr;
-bool (*is_Running)(void) = nullptr;
-void (*ened)(void) = nullptr;
+void (*ened)(bool call_End_Function) = nullptr;
 
 sf::RenderWindow window;
 sf::View view;
 sf::Font font;
 HINSTANCE hDLL;
+char* next_DLL_Path = nullptr;
 
 int main(int argc, char* argv[])
 {
@@ -40,7 +45,8 @@ int main(int argc, char* argv[])
 				if (mouse != nullptr) mouse(event.mouseMove);
 				break;
 			case sf::Event::MouseButtonPressed:
-				if (click != nullptr)click(event.mouseButton);
+				if (click != nullptr)
+					click(event.mouseButton);
 				break;
 			case sf::Event::Closed:
 				window.close();
@@ -73,27 +79,25 @@ void initlize()
 	if (!font.loadFromFile("C:/windows/fonts/msyh.ttc")) font.loadFromFile("C:/windos/fonts/msyh.ttf");
 	text.setFont(font);
 	text.setPosition((float)(window_Size[0] / 2), (float)(window_Size[1] / 2));
-	text.setOrigin(text.getGlobalBounds().width / 2, text.getGlobalBounds().height / 2);
 	text.setString(L"加载中……");
+	text.setOrigin(text.getGlobalBounds().width / 2, text.getGlobalBounds().height / 2);
 	window.draw(text);
 	window.display();
 
-	if (!load_DLL("./dll/weiqi.dll"))
+	if (!load_DLL(loader_Path))
 	{
 		text.setString(L"加载失败");
 		window.draw(text);
 		window.display();
 		return;
 	}
-
-	init(&window);
 }
 
 bool load_DLL(const char path[])
 {
 	if (path == nullptr)
 	{
-		if (ened != nullptr) ened();
+		if (ened != nullptr) ened(false);
 		FreeLibrary(hDLL);
 
 		hDLL = nullptr;
@@ -110,7 +114,7 @@ bool load_DLL(const char path[])
 	hDLL = LoadLibraryA(path);
 	if (hDLL == nullptr) { /*FreeLibrary(hDLL);*/ return false; } //C6387 hDLL == NULL 但是_IN_不应传入NULL
 
-	init = (void (*)(sf::RenderWindow*)) GetProcAddress(hDLL, "init");
+	init = (void (*)(sf::RenderWindow*, function_Pointer)) GetProcAddress(hDLL, "init");
 	if (init == nullptr) { FreeLibrary(hDLL); return false; }
 
 	update = (void (*)(void)) GetProcAddress(hDLL, "update");
@@ -128,11 +132,36 @@ bool load_DLL(const char path[])
 	sleep = (void (*)(void)) GetProcAddress(hDLL, "sleep");
 	if (sleep == nullptr) { FreeLibrary(hDLL); return false; }
 
-	is_Running = (bool (*)(void)) GetProcAddress(hDLL, "is_Running");
-	if (is_Running == nullptr) { FreeLibrary(hDLL); return false; }
-
-	ened = (void (*)(void)) GetProcAddress(hDLL, "ened");
+	ened = (void (*)(bool)) GetProcAddress(hDLL, "ened");
 	if (ened == nullptr) { FreeLibrary(hDLL); return false; }
 
+	init(&window, return_Function);
+
 	return true;
+}
+
+void change_DLL()
+{
+	load_DLL(nullptr);
+	load_DLL(next_DLL_Path);
+}
+
+void return_Function(char dll_Path[])
+{
+	//printf_s("return_Function Called\n");
+	int lenght = 0;
+	if (dll_Path == nullptr)
+	{
+		lenght = sizeof(loader_Path);
+		next_DLL_Path = new char[lenght];
+		strcpy_s(next_DLL_Path, lenght, loader_Path);
+	}
+	else
+	{
+		lenght = (int)strlen(dll_Path)+1;
+		next_DLL_Path = new char[lenght];
+		strcpy_s(next_DLL_Path, lenght, dll_Path);
+		delete[] dll_Path;
+	}
+	sleep = change_DLL;
 }
