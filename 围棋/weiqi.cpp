@@ -68,7 +68,7 @@ short wins[2] = { 0 };
 sf::Texture chess_Texture[2];
 //sf::Sprite chess[19][19];
 sf::CircleShape chess[6];
-sf::Text UI_Text[4];
+sf::Text UI_Text[3];
 sf::Text number_Text[10];
 sf::IntRect UI_Rect[2];
 
@@ -87,16 +87,23 @@ DLL void init(sf::RenderWindow* window)
 
 	UI_backgreoud.setPosition((float)window_Size[1], 0.f);
 
-	for (char i = 0; i < 4; i++)
+	for (char i = 0; i < 3; i++)
 	{
 		UI_Text[i].setFont(font);
 		UI_Text[i].setFillColor(sf::Color(0x000000FF));
-		UI_Text[i].setScale(1, -1); //不知为何需要沿Y轴对称一下
-		UI_Text[i].setString(L"000");
-		UI_Text[i].setOrigin(UI_Text[i].getGlobalBounds().width / 2, UI_Text[i].getGlobalBounds().height / 2);
-		UI_Text[i].setString(L"0");
-		UI_Text[i].setPosition((float)(186 + 186 * (i % 2) + 20 + window_Size[1]), (float)(200 + 180 * 2 - 180 * (i / 2) - 80));//坐标转换真麻烦 还要偏移window_Size[1]
+		UI_Text[i].setScale(1, -1); //不知为何需要沿Y轴对称一下 可能是view的原因
 	}
+
+	for (char i = 0; i < 2; i++)
+	{
+		UI_Text[i].setString(L"0(0)");
+		UI_Text[i].setOrigin(UI_Text[i].getGlobalBounds().width / 2, UI_Text[i].getGlobalBounds().height / 2);
+		UI_Text[i].setPosition((float)(186 + 186 * (i % 2) + window_Size[1]), (float)(200 + 180 * 2 - 80));//坐标转换真麻烦 还要偏移window_Size[1]
+	}
+
+	UI_Text[2].setString(L"黑白相同");
+	UI_Text[2].setOrigin(UI_Text[2].getGlobalBounds().width / 2, UI_Text[2].getGlobalBounds().height / 2);
+	UI_Text[2].setPosition(1000, 360);
 
 	char buffer[3] = "";
 
@@ -128,6 +135,8 @@ DLL void init(sf::RenderWindow* window)
 	{
 		chess[i].setRadius(UI_Chess_Radius);
 		chess[i].setOrigin((float)UI_Chess_Radius, (float)UI_Chess_Radius);
+		chess[i].setRadius(UI_Chess_Radius);
+		chess[i].setOrigin((float)UI_Chess_Radius, (float)UI_Chess_Radius);
 	}
 
 	chess[0].setFillColor(sf::Color(0x000000FF));
@@ -136,9 +145,13 @@ DLL void init(sf::RenderWindow* window)
 	chess[3].setFillColor(sf::Color(0xFFFFFF66));
 	chess[4].setFillColor(sf::Color(0x000000FF));
 	chess[5].setFillColor(sf::Color(0xFFFFFFFF));
+	//chess[6].setFillColor(sf::Color(0x000000FF));
+	//chess[7].setFillColor(sf::Color(0xFFFFFFFF));
 
 	chess[4].setPosition(800,160);
 	chess[5].setPosition(800,160);
+	//chess[6].setPosition(800,360);
+	//chess[7].setPosition(800,360);
 
 	//for (char i = 0; i < 19; i++)
 	//	for (char j = 0; j < 19; j++)
@@ -176,7 +189,7 @@ DLL void click(sf::Event::MouseButtonEvent mouseEvent)
 	sf::Vector2f position = window->mapPixelToCoords({ mouseEvent.x, mouseEvent.y });
 
 	//printf_s("click %d %d\n", (int)position.x, (int)position.y);
-	//printf_s("mouse %d %d\n", (int)mouseEvent.x, (int)mouseEvent.y);
+	printf_s("mouse %d %d\n", (int)mouseEvent.x, (int)mouseEvent.y);
 
 	char subscript[2] = { -1, -1 };
 
@@ -336,49 +349,42 @@ sf::Texture get_Map_Texture()
 sf::Texture get_UI_Texture()
 {
 	sf::RenderTexture background;
-	sf::CircleShape chess[4];
-	sf::Text text[5];
+	sf::CircleShape chess[2];
+	sf::Text text[3];
 
 	background.create(window_Size[0] - window_Size[1], window_Size[1]);
 	background.clear(sf::Color(0xF0D36FFF));
 
 	chess[0].setFillColor(sf::Color(0x000000FF));
 	chess[1].setFillColor(sf::Color(0xFFFFFFFF));
-	chess[2].setFillColor(sf::Color(0x000000FF));
-	chess[3].setFillColor(sf::Color(0xFFFFFFFF));
-	for (char i = 0; i < 4; i++)
+	for (char i = 0; i < 2; i++)
 	{
 		chess[i].setRadius(UI_Chess_Radius);
 		chess[i].setOrigin(UI_Chess_Radius, UI_Chess_Radius);
-		chess[i].setPosition((float)(186 + 186 * (i % 2) + 20), (float)(200 + 180 * (i / 2) - 20));
+		chess[i].setPosition((float)(186 + 186 * (i % 2)), (float)(200 + 180 * (i / 2)));
 		background.draw(chess[i]);
 	}
 
-	text[0].setString(L"数\n子\n法");
-	text[1].setString(L"数\n目\n法");
-	text[2].setString(L"重新游戏");
-	text[3].setString(L"显示详情");
-	text[4].setString(L"围棋");
+	text[0].setString(L"重新游戏");
+	text[1].setString(L"显示详情");
+	text[2].setString(L"围棋");
 
-	for (char i = 0; i < 5; i++)
+	for (char i = 0; i < 3; i++)
 	{
 		text[i].setFont(font);
 		text[i].setFillColor(sf::Color(0x000000FF));
 		text[i].setOrigin(text[i].getGlobalBounds().width / 2, text[i].getGlobalBounds().height / 2);
 	}
 
+	//text[0].setPosition((float)(186 - 100), (float)(200 + 180));
+
 	for (char i = 0; i < 2; i++)
-	{
-		text[i].setPosition((float)(186 - 100), (float)(200 + 180 * (i % 2)));
-		background.draw(text[i]);
-	}
-	for (char i = 2; i < 4; i++)
-	{
 		text[i].setPosition((float)(200 + 186 * (i % 2)), (float)(200 + 180 * 2));
+
+	text[2].setPosition(280, 60);
+
+	for (char i = 0; i < 3; i++)
 		background.draw(text[i]);
-	}
-	text[4].setPosition(280, 60);
-	background.draw(text[4]);
 
 	return background.getTexture();
 }
@@ -441,18 +447,45 @@ void draw()
 		}
 	}
 
+	//渲染UI
 	{
-		//渲染UI
-
-		static char buffer[4] = "";
-
-		for (int i = 0; i < 4; i++)
+		
+		//渲染棋数
 		{
-			sprintf_s(buffer, sizeof(buffer), "%d", holds[i]);
-			UI_Text[i].setString(buffer);
-			fream.draw(UI_Text[i]);
+			static char buffer[9] = "";
+
+			for (int i = 0; i < 2; i++)
+			{
+				sprintf_s(buffer, sizeof(buffer), "%d(%d)", holds[i], holds[i + 2]);
+				UI_Text[i].setString(buffer);
+				UI_Text[i].setOrigin(UI_Text[i].getGlobalBounds().width / 2, UI_Text[i].getGlobalBounds().height / 2); //用一次居中一次
+				fream.draw(UI_Text[i]);
+			}
 		}
 
+		//渲染胜负
+		{
+			wchar_t buffer[20] = L"黑白相当";
+			if (wins[0] * wins[1] > 0)
+			{
+				//同号
+				if (wins[0] > 0) swprintf_s(buffer, sizeof(buffer)/sizeof(wchar_t), L"黑领先白%d(%d)", wins[0], wins[1]);
+				else swprintf_s(buffer, sizeof(buffer) / sizeof(wchar_t), L"白领先黑%d(%d)", -wins[0], -wins[1]);
+			}
+			else if (wins[0] != 0 && wins[1] != 0)
+			{
+				//异号
+				if (wins[0] > 0) swprintf_s(buffer, sizeof(buffer) / sizeof(wchar_t), L"黑领先白%d子，白领先黑%d目", wins[0], -wins[1]);
+				else swprintf_s(buffer, sizeof(buffer) / sizeof(wchar_t), L"白领先黑%d子，黑领先白%d目", -wins[0], wins[1]);
+			}
+			UI_Text[2].setString(buffer);
+			UI_Text[2].setOrigin(UI_Text[2].getGlobalBounds().width / 2, UI_Text[2].getGlobalBounds().height / 2);
+			fream.draw(UI_Text[2]);
+		}
+
+		//fream.draw(chess[wins[0] > wins[1] ? 6 : 7]);
+		
+		//渲染下一手
 		fream.draw(chess[next_Color ? 4 : 5]);
 	}
 
