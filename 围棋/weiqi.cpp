@@ -153,7 +153,7 @@ DLL void init(sf::RenderWindow* window)
 
 	update_Fream = true;
 
-	printf_s("init\n");
+	//printf_s("init\n");
 }
 
 DLL void update()
@@ -175,8 +175,8 @@ DLL void click(sf::Event::MouseButtonEvent mouseEvent)
 {
 	sf::Vector2f position = window->mapPixelToCoords({ mouseEvent.x, mouseEvent.y });
 
-	printf_s("click %d %d\n", (int)position.x, (int)position.y);
-	printf_s("mouse %d %d\n", (int)mouseEvent.x, (int)mouseEvent.y);
+	//printf_s("click %d %d\n", (int)position.x, (int)position.y);
+	//printf_s("mouse %d %d\n", (int)mouseEvent.x, (int)mouseEvent.y);
 
 	char subscript[2] = { -1, -1 };
 
@@ -201,7 +201,7 @@ DLL void click(sf::Event::MouseButtonEvent mouseEvent)
 
 			compute_Belong(3);
 			update_Fream = true;
-			printf_s("change %d %d 气：%d\n", subscript[0], subscript[1], map[subscript[0]][subscript[1]].qi);
+			//printf_s("change %d %d 气：%d\n", subscript[0], subscript[1], map[subscript[0]][subscript[1]].qi);
 		}
 
 		if (map[subscript[0]][subscript[1]].qi == 0) //空地
@@ -219,7 +219,7 @@ DLL void click(sf::Event::MouseButtonEvent mouseEvent)
 				next_Color = !next_Color; //轮流持子
 				compute_Belong(3);
 				update_Fream = true;
-				printf_s("put %d %d = %d\n", subscript[0], subscript[1], map[subscript[0]][subscript[1]].qi);
+				//printf_s("put %d %d = %d\n", subscript[0], subscript[1], map[subscript[0]][subscript[1]].qi);
 			}
 			else
 			{
@@ -241,8 +241,11 @@ DLL void click(sf::Event::MouseButtonEvent mouseEvent)
 			map[i][j].belong = 0;
 		}
 		next_Color = true;
+		for (char i = 0; i < 2; i++) wins[i] = 0;
+
+		for (char i = 0; i < 4; i++) holds[i] = 0;
 		update_Fream = true;
-		printf_s("restart\n");
+		//printf_s("restart\n");
 	}
 
 	if (UI_Rect[1].contains((sf::Vector2i)position))
@@ -250,7 +253,7 @@ DLL void click(sf::Event::MouseButtonEvent mouseEvent)
 		//显示详情
 		draw_Details = !draw_Details;
 		update_Fream = true;
-		printf_s("show detail\n");
+		//printf_s("show detail\n");
 	}
 }
 
@@ -453,13 +456,13 @@ void draw()
 		fream.draw(chess[next_Color ? 4 : 5]);
 	}
 
-	printf_s("draw\n");
+	//printf_s("draw\n");
 }
 
 void compute_Qi(char x, char y)
 {
 	short qi = 0;
-
+	
 	if (x < 0 || x > 18) return;
 	if (y < 0 || y > 18) return; //越界
 
@@ -529,7 +532,7 @@ void spread_Qi(char x, char y, short qi, char color, char checked_true, bool exc
 
 			for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
 				map[i][j].checked &= checked::spread_Zero_false; //重置子传播标志
-			printf_s("reput %d %d = %d\n", x, y, new_qi);
+			//printf_s("reput %d %d = %d\n", x, y, new_qi);
 			spread_Qi(x, y, new_qi, map[x][y].qi > 0 ? 1 : -1, checked::spread_Zero_true); //有区别，进行传播
 			return;
 		}
@@ -557,13 +560,13 @@ void spread_Qi(char x, char y, short qi, char color, char checked_true, bool exc
 
 		for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
 			map[i][j].checked &= checked::spread_Zero_false; //重置子传播标志
-		printf_s("zero %d %d = %d\n", x, y, new_qi);
+		//printf_s("zero %d %d = %d\n", x, y, new_qi);
 		spread_Qi(x, y, new_qi, map[x][y].qi > 0 ? 1 : -1, checked::spread_Zero_true); //有区别，进行传播
 		return;
 	}
 
 	map[x][y].qi = qi; //相同颜色
-	printf_s("spread %d %d = %d\n", x, y, qi);
+	//printf_s("spread %d %d = %d\n", x, y, qi);
 	spread_Qi(x - 1, y, qi, color, checked_true);//遍历
 	spread_Qi(x + 1, y, qi, color, checked_true);//遍历
 	spread_Qi(x, y - 1, qi, color, checked_true);//遍历
@@ -624,5 +627,5 @@ void compute_Belong(char depth)
 		if (map[i][j].belong < 0) { holds[1]++; holds[3]++; continue; }
 	}
 	wins[0] = holds[0] - holds[1]; wins[1] = holds[2] - holds[3];
-	printf_s("wins %d %d\n", wins[0], wins[1]);
+	//printf_s("wins %d %d\n", wins[0], wins[1]);
 }
