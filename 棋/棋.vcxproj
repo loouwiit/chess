@@ -157,6 +157,7 @@
     <ResourceCompile Include="棋.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="resource\棋.ico" />
     <Image Include="res\棋.ico" />
     <Image Include="棋.ico" />
     <Image Include="棋.png" />

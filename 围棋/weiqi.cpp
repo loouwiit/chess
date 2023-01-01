@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <fstream>
 #include <SFML/Graphics.hpp>
 
 #define DLL extern "C" __declspec(dllexport)
@@ -19,6 +20,7 @@ constexpr int chess_Radius = 12;
 constexpr int UI_Chess_Radius = 20;
 constexpr int block_Size = 1080 * 2 / 3 / 19;
 constexpr int window_Size[2] = { 1920 * 2 / 3, 1080 * 2 / 3 };
+constexpr char save_Path[] = "./save/weiqi.qi";
 
 constexpr int map_Offset = (1080 * 2 / 3 - 37 * 19) / 2;
 
@@ -52,6 +54,8 @@ void compute_Qi(char x, char y);//计算并更新气
 short check_Qi(char x, char y, short self_Color = 0);//计算气
 void spread_Qi(char x, char y);//传播气
 void spread_Qi(char x, char y, short qi, char color, char checked_true = checked::spread_true, bool except_Self = false);//传播气
+bool load_Save(const char path[]);
+bool save_Save(const char path[]);
 
 void compute_Belong(char depth);//计算归属
 
@@ -173,6 +177,8 @@ DLL void init(sf::RenderWindow* window, function_Pointer end_Function)
 
 	//		window->draw(chess[i][j]);
 	//	}
+
+	load_Save(save_Path);
 
 	update_Fream = true;
 
@@ -308,6 +314,7 @@ DLL void sleep()
 
 DLL void ened(bool call_End_Function)
 {
+	if (!call_End_Function) save_Save(save_Path); //主程序调用切换的时候
 	if (call_End_Function) end_Function(NULL);
 }
 
@@ -622,6 +629,75 @@ void spread_Qi(char x, char y, short qi, char color, char checked_true, bool exc
 	spread_Qi(x + 1, y, qi, color, checked_true);//遍历
 	spread_Qi(x, y - 1, qi, color, checked_true);//遍历
 	spread_Qi(x, y + 1, qi, color, checked_true);//遍历
+}
+
+bool load_Save(const char path[])
+{
+	constexpr char buffer_Size = 19 / 4 + 1;
+	char buffer[19][buffer_Size] = { "" };
+	short qi = 0;
+	std::ifstream file;
+
+	file.open(path, std::ios::in | std::ios::binary);
+	if (!file.is_open()) return false;
+
+	for (char i = 0; i < 19; i++)
+		file.read(buffer[i], buffer_Size); //棋盘数据
+
+	for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
+	{
+		qi = (buffer[i][j / 4] & (0x3 << ((j % 4) * 2))) >> ((j % 4) * 2);
+		switch (qi)
+		{
+		case 1:
+			map[i][j].qi = 1;
+			break;
+		case 2:
+			map[i][j].qi = -1;
+			break;
+		case 0:
+			break;
+		default:
+			//error
+			return false;
+		}
+	}
+
+	file.read(buffer[0], 1); //下一手和显示详情
+	next_Color = (buffer[0][0] & (0x1 << 1)) >> 1;
+	draw_Details = buffer[0][0] & 0x1;
+
+	file.close();
+
+	//计算数据
+	for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++)
+		compute_Qi(i,j);
+	compute_Belong(3);
+	
+	return true;
+}
+
+bool save_Save(const char path[])
+{
+	constexpr char buffer_Size = 19 / 4 + 1;
+	char buffer[19][buffer_Size] = { "" };
+	std::ofstream file;
+
+	file.open(path, std::ios::out | std::ios::binary);
+	if (!file.is_open()) return false;
+
+	for (char i = 0; i < 19; i++) for (char j = 0; j < 19; j++) //棋盘
+	{
+		buffer[i][j / 4] |= map[i][j].qi == 0 ? 0x0 : ((map[i][j].qi > 0 ? 0x1 : 0x2) << ((j % 4) * 2));
+	}
+	for (char i = 0; i < 19; i++)
+		file.write(buffer[i], buffer_Size);
+
+	buffer[0][0] = ((next_Color ? 1 : 0) << 1) | (draw_Details ? 1 : 0); //下一手和显示详情
+	file.write(buffer[0], 1);
+
+	file.close();
+	return true;
 }
 
 void compute_Belong(char depth)

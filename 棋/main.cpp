@@ -89,7 +89,7 @@ void initlize()
 	window.setView(view);
 
 	sf::Image icon;
-	icon.loadFromFile("./res/Æå.png");
+	icon.loadFromFile("./resource/Æå.png");
 	window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 
 	sf::Text text;
