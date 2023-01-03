@@ -217,21 +217,21 @@ DLL void click(sf::Event::MouseButtonEvent mouseEvent)
 
 	if (subscript[0] != -1 && subscript[1] != -1)
 	{
-		if (mouseEvent.button == sf::Mouse::Right)
-		{
-			map[subscript[0]][subscript[1]].qi = -map[subscript[0]][subscript[1]].qi;
+		//if (mouseEvent.button == sf::Mouse::Right)
+		//{
+		//	map[subscript[0]][subscript[1]].qi = -map[subscript[0]][subscript[1]].qi;
 
-			compute_Qi(subscript[0] - 1, subscript[1]);//四周
-			compute_Qi(subscript[0] + 1, subscript[1]);
-			compute_Qi(subscript[0], subscript[1] - 1);
-			compute_Qi(subscript[0], subscript[1] + 1);
+		//	compute_Qi(subscript[0] - 1, subscript[1]);//四周
+		//	compute_Qi(subscript[0] + 1, subscript[1]);
+		//	compute_Qi(subscript[0], subscript[1] - 1);
+		//	compute_Qi(subscript[0], subscript[1] + 1);
 
-			compute_Qi(subscript[0], subscript[1]);//中心
+		//	compute_Qi(subscript[0], subscript[1]);//中心
 
-			compute_Belong(3);
-			update_Fream = true;
-			//printf_s("change %d %d 气：%d\n", subscript[0], subscript[1], map[subscript[0]][subscript[1]].qi);
-		}
+		//	compute_Belong(3);
+		//	update_Fream = true;
+		//	//printf_s("change %d %d 气：%d\n", subscript[0], subscript[1], map[subscript[0]][subscript[1]].qi);
+		//}
 
 		if (map[subscript[0]][subscript[1]].qi == 0) //空地
 		{
