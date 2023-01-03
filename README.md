@@ -1,8 +1,8 @@
 棋 <br>
 <br>
 下载: <br>
-<a href="https://github.com/loouwiit/chess/blob/master/%E7%94%9F%E6%88%90/1.0.0.1/64.zip">1.0.0.1 x64</a> <br>
-<a href="https://github.com/loouwiit/chess/blob/master/%E7%94%9F%E6%88%90/1.0.0.1/32.zip">1.0.0.1 x86</a> <br>
+<a href="https://github.com/loouwiit/chess/blob/master/%E7%94%9F%E6%88%90/1.0.0.2/64.zip">1.0.0.1 x64</a> <br>
+<a href="https://github.com/loouwiit/chess/blob/master/%E7%94%9F%E6%88%90/1.0.0.2/32.zip">1.0.0.1 x86</a> <br>
 <br>
 <a href="https://github.com/loouwiit/chess/tree/master/%E7%94%9F%E6%88%90/64/dll">64位dll</a> <br>
 <a href="https://github.com/loouwiit/chess/tree/master/%E7%94%9F%E6%88%90/32/dll">32位dll</a> <br>
